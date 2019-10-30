@@ -1,0 +1,46 @@
+CREATE TABLE IF NOT EXISTS user(
+    user_id      SERIAL PRIMARY KEY, /*unique id for each user*/
+    username     VARCHAR(50),        /*the username of the user*/
+    password     VARCHAR(500),       /*the encrypted password*/
+    posts        INT[] REFERENCES post(post_id), /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
+    cookie       INT NOT NULL, /*cookie (the lazy way until i figure out how to do it better)*/
+    users_msgd   INT[] REFERENCES user(user_id), /*the table of users messaged*/
+    user_msgs    varchar(2000)[][] /*the 2d array of messages that have been sent*/
+);
+
+CREATE TABLE IF NOT EXISTS post(
+    post_id      SERIAL PRIMARY KEY, /*unique id for each post*/
+    post_title   VARCHAR(500), /*title of the post*/
+    post_body    VARCHAR(500), /*the body of the post*/
+    date_created DATE NOT NULL DEFAULT CURRENT_DATE, /*the current date that the post is made*/
+    tag_array    BOOLEAN[7] NOT NULL, /*the array that stores the tags to filter by*/
+    poster_id    INT REFERENCES user(user_id), /*this references back to the account that created it*/
+    complete     BOOLEAN NOT NULL /*if the deal is complete*/
+);
+
+INSERT INTO user(username, password, posts, cookie, users_msgd, user_msgs)
+VALUES('SeerOfDreams', 'Password123', ARRAY [], 12345, ARRAY [], ARRAY []),
+('b0b123', 'lookapassword', ARRAY [1], 123456, ARRAY [], ARRAY []),
+('u53r', 'p455w0rd', ARRAY [2], 123457, ARRAY [], ARRAY []),
+('fun', 'wordthatpasses', ARRAY [3,4], 123458, ARRAY [], ARRAY []),
+('ugh', 'thiswordpasses', ARRAY [], 123459, ARRAY [], ARRAY []),
+('u53r1', 'w0rdth4tp45535', ARRAY [], 123460, ARRAY [], ARRAY [])
+;
+
+INSERT INTO post(post_title, post_body, tag_array, poster_id, complete)
+VALUES('car', 'this is car for sale', ARRAY [0,0,0,0,0,0,1], 2, 0),
+('free food', 'is food', ARRAY [1,0,0,0,0,0,0], 3, 0),
+('old clothes', 'fhkjafbahkdv', ARRAY [0,0,1,0,0,0,0], 4, 1),
+('old furniture', 'dxfcgvhbjkn', ARRAY [0,1,0,0,0,0,0], 4, 0)
+;
+
+SELECT * FROM user WHERE username = 'SeerOfDreams' AND cookie = 12345; /*later replace SeerOfDreams with a username variable and cookie with a variable too*/
+
+CREATE VIEW new_filter AS SELECT * FROM post WHERE complete = 0 ORDER BY date_created DESC;
+
+CREATE VIEW food_filter AS SELECT * FROM post WHERE complete = 0 AND tag_array = [1,0,0,0,0,0,0] ORDER BY date_created DESC; /*maybe it's ASC i have to test*/
+
+
+
+/*do the ids start at 0 or 1?????*/
+/*'this is a message','look im messaging another user']['look a response']), ik im doing the 2d array wrong so well need to work on that in the future*/
