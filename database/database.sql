@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     /*users_msgd   INT[] REFERENCES "user"(user_id), /*the table of users messaged*/
     user_msgs    varchar(2000)[][] /*the 2d array of messages that have been sent*/temporarily disabled to wait to figure out how to do this*/
 
-ALTER TABLE "user" ADD posts INT[] REFERENCES "post"(post_id); /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
+/* currently is an issue*/ ALTER TABLE "user" ADD posts INT[] REFERENCES "post"(post_id); /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
 
 CREATE TABLE IF NOT EXISTS "post" (
     post_id      SERIAL PRIMARY KEY, /*unique id for each post*/
@@ -33,14 +33,15 @@ INSERT INTO "post" (post_title, post_body, tag_array, poster_id, complete)
 VALUES('car', 'this is car for sale', ARRAY [FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,TRUE], 2, FALSE),
 ('free food', 'is food', ARRAY [TRUE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE], 3, FALSE),
 ('old clothes', 'fhkjafbahkdv', ARRAY [FALSE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE], 4, TRUE),
-('old furniture', 'dxfcgvhbjkn', ARRAY [FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE], 4, FALSE)
+('old furniture', 'dxfcgvhbjkn', ARRAY [FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE], 4, FALSE),
+('free edible clothes', 'is food', ARRAY [TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE], 3, FALSE)
 ;
 
 SELECT * FROM "user" WHERE username = 'SeerOfDreams' AND cookie = 12345; /*later replace SeerOfDreams with a username variable and cookie with a variable too*/
 
 CREATE VIEW new_filter AS SELECT * FROM post WHERE complete = FALSE ORDER BY date_created DESC;
 
-CREATE VIEW food_filter AS SELECT * FROM post WHERE complete = FALSE AND tag_array[1] = TRUE AND tag_array[2] = FALSE AND tag_array[3] = FALSE AND tag_array[4] = FALSE AND tag_array[5] = FALSE AND tag_array[6] = FALSE AND tag_array[7] = FALSE ORDER BY date_created DESC; /*maybe it's ASC i have to test*/
+CREATE VIEW food_filter AS SELECT * FROM post WHERE complete = FALSE AND tag_array[1] = TRUE ORDER BY date_created DESC; /*maybe it's ASC i have to test*/
 
 
 
