@@ -1,0 +1,10 @@
+{
+    "name": "cuswap-site",
+    "main": "cuswapserver.js",
+    "dependencies": {
+        "ejs": "^2.7.1",
+        "express": "^4.6.1",
+        "pg-promise": "^9.3.3",
+        "pug": "^2.0.4"
+    }
+}

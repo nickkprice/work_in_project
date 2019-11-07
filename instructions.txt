@@ -1,0 +1,15 @@
+sudo -u postgres psql
+create database cuswap_db;
+\c cuswap_db;
+THEN, enter all commands in database.sql
+
+Now in cuswapserver.js
+Need "password" to be the password for your sql database, I made mine "pass"
+I named my sql database "cuswap_db"
+
+To start the server:
+navigate to work_in_project in terminal using cd
+Use "node cuswapserver.js"
+
+To view live webpage:
+Navigate to http://localhost:8080/homepage/
