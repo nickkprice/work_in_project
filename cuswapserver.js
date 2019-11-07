@@ -50,7 +50,6 @@ var fs = require('fs');
 
 // home page
 app.get('/homepage', function(req, res) {
-  // var loggedIn = req.session.loggedIn;
 	res.sendFile(__dirname+'/views/homepage.html',{ //sends the client the homepage file from the views folder
 	});
 });
@@ -86,7 +85,6 @@ app.post('/login/submitLogin', function(req, res) {
 		{
 			console.log("Authenticated");
 			var loggedIn = true;
-			// req.session.loggedIn = loggedIn;
 			res.sendFile(__dirname+'/views/homepage.html',{ //stays on login/submitLogin url, need to redirect instead?
 				//also need to be able to send the loggedIn variable to homepage which will be used by clientside JS
 			});
@@ -105,6 +103,15 @@ app.post('/login/submitLogin', function(req, res) {
   		});
   });
 });
+
+// testing ejs templates
+app.get('/test1', function(req, res) {
+  var displayWord = "Hello World!";
+	res.render(__dirname+'/templates/homepage.ejs',{ //sends the client the homepage template
+    newTitle: displayWord
+	});
+});
+
 
 app.listen(8080);
 console.log('listening on port 8080');
