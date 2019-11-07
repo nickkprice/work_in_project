@@ -47,7 +47,7 @@ app.set('view engine', 'ejs'); //using this view engine to res.sendFile html pag
 app.engine('html', require('ejs').renderFile);
 
 // home page
-app.get('/homepage', function(req, res) {
+app.get('/homepage.html', function(req, res) {
 	res.sendFile(__dirname+'/views/homepage.html',{ //sends the client the homepage file from the views folder
 	});
 });
