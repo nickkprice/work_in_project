@@ -17,25 +17,25 @@
     <title>Login</title>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <a class="navbar-brand" href="./homepage.html">
+      <a class="navbar-brand" href="/homepage">
         <img src="../resources/CUSwapLogo1.png" width="92" height="27" class="d-inline-block align-top" alt="CU Swap">
       </a>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a id="navHome" class="nav-link" href="./homepage.html">Home</a>
+            <a id="navHome" class="nav-link" href="/homepage">Home</a>
           </li>
           <li class="nav-item">
-            <a id="navProfile" class="nav-link" href="./userProfile.html">Profile</a>
+            <a id="navProfile" class="nav-link" href="/userProfile">Profile</a>
           </li>
           <li class="nav-item">
-            <a id="navCreatePost" class="nav-link" href="./createpost.html">Create Post</a>
+            <a id="navCreatePost" class="nav-link" href="/createpost">Create Post</a>
           </li>
         </ul>
 
         <ul class="navbar-nav ml-auto active">
           <li class="nav-item">
-            <a id="navLogInOut" class="nav-link" href="./login.html">Log In</a>
+            <a id="navLogInOut" class="nav-link" href="/login">Log In</a>
           </li>
         </ul>
       </div>
@@ -49,7 +49,7 @@
             <div class="card-body">
               <h3 class="card-title text-center"> Login</h3>
 
-              <form>
+              <form action="/login/submitLogin" method="post">
                 <div class="form-group form-inline">
                   <label for="uName" class="px-2">Username </label>
                   <input type="text" class="form-control" placeholder="Username" name="uName" required>

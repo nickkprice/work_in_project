@@ -12,4 +12,4 @@ navigate to work_in_project in terminal using cd
 Use "node cuswapserver.js"
 
 To view live webpage:
-Navigate to http://localhost:8080/homepage.html/
+Navigate to http://localhost:8080/homepage/
