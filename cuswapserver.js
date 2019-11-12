@@ -168,6 +168,130 @@ app.get('/logout', function(req, res) {
   res.redirect('/homepage'); //go to homepage no matter what
 });
 
+// create post page (navigating to)
+app.get('/createpost', function(req, res) {
+  var logIn = false; //if false, user is not logged in
+  if(req.cookies) //user has cookies
+  {
+    if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
+    {
+      logIn = true; //they are logged in
+    }
+  }
+
+  res.render(__dirname+'/templates/createpost.ejs',{ //sends the client the create post template
+    pageTitle: "Create Post", //title of this page
+    loggedIn: logIn //Change this based on a session cookie check
+  });
+});
+
+//user has submitted a new post from the "create post" page
+app.post('/createpost/submitPost', function(req, res) {
+  if(req.session.user && req.cookies.user_sid) //check if user is logged in
+  {
+    var thisUser = req.session.user; //users id
+
+    //Information from the "create post" form
+    var inputTitle = req.body.postTitle;
+    var inputDesc = req.body.postText;
+    //If a checkbox was selected req.body.tag# will be TRUE (defined in createpost.ejs)
+    var tag0 = req.body.tag0;
+    var tag1 = req.body.tag1;
+    var tag2 = req.body.tag2;
+    var tag3 = req.body.tag3;
+    var tag4 = req.body.tag4;
+    var tag5 = req.body.tag5;
+    var tag6 = req.body.tag6;
+    ///If checkbox was not selected we have to manually set variable to false
+    if(!tag0){tag0 = "FALSE";}
+    if(!tag1){tag1 = "FALSE";}
+    if(!tag2){tag2 = "FALSE";}
+    if(!tag3){tag3 = "FALSE";}
+    if(!tag4){tag4 = "FALSE";}
+    if(!tag5){tag5 = "FALSE";}
+    if(!tag6){tag6 = "FALSE";}
+
+    //SQL to insert the new post into the database
+    var cpquery1 = 'INSERT INTO "post" (post_title, post_body, tag_array, poster_id, complete) VALUES(\''+ inputTitle +'\', \''+ inputDesc +'\', ARRAY ['+ tag0 +','+ tag1 +','+ tag2 +','+ tag3 +','+ tag4 +','+ tag5 +','+ tag6 +'], '+ thisUser +', FALSE);';
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(cpquery1),
+        ]);
+    })
+    .then(data => {
+        res.redirect('/createpost'); //go back to create post after the post is added to the database
+    })
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+            res.redirect('/createpost');
+    });
+  }
+  else //user was not logged in
+  {
+    res.redirect('/login'); //redirect to login page since not logged in
+  }
+});
+
+// register page (navigating to)
+app.get('/register', function(req, res) {
+  var logIn = false; //if false, user is not logged in
+  if(req.cookies) //user has cookies
+  {
+    if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
+    {
+      logIn = true; //they are logged in
+    }
+  }
+
+  if(logIn) //if logged in
+  {
+    res.redirect('/homepage'); //redirect to home page since already have an account and logged in
+  }
+  else //not logged in
+  {
+    res.render(__dirname+'/templates/register.ejs',{ //sends the client the register template
+      pageTitle: "Register", //title of this page
+      loggedIn: logIn //Change this based on a session cookie check
+    });
+  }
+});
+
+//user is trying to create a new account
+app.post('/register/submitRegister', function(req, res) {
+  if(!(req.session.user && req.cookies.user_sid)) //make sure user is not logged in already
+  {
+    //NOTE: we should check that password/confirm password matched clientside and only enable the submit button then
+    //Information from the "register" form
+    var newName = req.body.uName;
+    var newPass = req.body.uPassword;
+    //HASH PASSWORD HERE
+
+    //SQL to insert the new user into the database
+    var regquery1 = 'INSERT INTO "user" (username, password, cookie) VALUES(\''+ newName +'\', \''+ newPass +'\', 0);';
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(regquery1),
+        ]);
+    })
+    .then(data => {
+        res.redirect('/login'); //go back to create post after the post is added to the database
+    })
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+            res.redirect('/register');
+    });
+  }
+  else //user is logged in (already has an account)
+  {
+    res.redirect('/homepage'); //redirect to homepage
+  }
+});
+
+
 app.use(function (req, res, next) {
   res.status(404).send("Page not found")
 });
