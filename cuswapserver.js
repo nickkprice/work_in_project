@@ -124,11 +124,11 @@ app.get('/login', function(req, res) {
 //user has submitted login data and wants to be authenticated
 app.post('/login/submitLogin', function(req, res) {
   var inputUsername = req.body.uName;
-  var inputPassword = req.body.uPassword
+  var inputPassword = req.body.uPassword;
   //HASH PASSWORD HERE
 	//This query will return the user id of the user with username/pass combo that was entered on login page
-  var loginquery1 = 'SELECT user_id FROM "user" WHERE username=\'' + inputUsername + '\' AND password=\'' + inputPassword + '\';';
-
+  var loginquery1 = "SELECT user_id FROM \"user\" WHERE username='" + inputUsername + "' AND password='" + inputPassword + "';";
+  console.log(loginquery1);
   db.task('get-everything', task => {
       return task.batch([
           task.any(loginquery1),
