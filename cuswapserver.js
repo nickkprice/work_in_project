@@ -128,7 +128,7 @@ app.post('/login/submitLogin', function(req, res) {
   //HASH PASSWORD HERE
 	//This query will return the user id of the user with username/pass combo that was entered on login page
   var loginquery1 = "SELECT user_id FROM \"user\" WHERE username='" + inputUsername + "' AND password='" + inputPassword + "';";
-  console.log(loginquery1);
+
   db.task('get-everything', task => {
       return task.batch([
           task.any(loginquery1),
@@ -269,7 +269,7 @@ app.post('/register/submitRegister', function(req, res) {
     //HASH PASSWORD HERE
 
     //SQL to insert the new user into the database
-    var regquery1 = 'INSERT INTO "user" (username, password, cookie) VALUES(\''+ newName +'\', \''+ newPass +'\', 0);';
+    var regquery1 = "INSERT INTO \"user\" (username, password) VALUES('"+ newName +"', '"+ newPass +"');";
 
     db.task('get-everything', task => {
         return task.batch([
