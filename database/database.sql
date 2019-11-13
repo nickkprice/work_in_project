@@ -4,15 +4,46 @@ CREATE TABLE IF NOT EXISTS "user" (
     password     VARCHAR(500)       /*the encrypted password*/
 );
 
+    /*users_msgd   INT[] REFERENCES "user"(user_id), /*the table of users messaged*/
+    user_msgs    varchar(2000)[][] /*the 2d array of messages that have been sent*/temporarily disabled to wait to figure out how to do this*/
+
+ALTER TABLE "user" ADD posts INT[] REFERENCES "post"(post_id); /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
+
 CREATE TABLE IF NOT EXISTS "post" (
     post_id      SERIAL PRIMARY KEY, /*unique id for each post*/
     post_title   VARCHAR(200), /*title of the post*/
     post_body    VARCHAR(2500), /*the body of the post*/
-    date_created DATE NOT NULL DEFAULT CURRENT_DATE, /*the current date that the post is made*/
+    time_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, /*the current date that the post is made*/
     tag_array    BOOLEAN[7] NOT NULL, /*the array that stores the tags to filter by*/
     poster_id    INT REFERENCES "user"(user_id), /*this references back to the account that created it*/
     complete     BOOLEAN NOT NULL /*if the deal is complete*/
 );
+
+CREATE TABLE IF NOT EXISTS "messages" (
+  message_id SERIAL PRIMARY KEY,
+  from_user INT REFERENCES "user"(user_id),
+  to_user INT REFERENCES "user"(user_id),
+  message_body VARCHAR(2500),
+  time_created TIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO "messages" (from_user, to_user, message_body)
+VALUES(1,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfx'),
+(2,1,'ghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf'),
+(1,2,'gwyferuolerkvhgjhrfdbakvgbdkvjadfbvkjdfb')
+;
+
+INSERT INTO "messages" (from_user, to_user, message_body)
+VALUES(2,3,'asdfgsbhdntjggmfzbdvGx'),
+(3,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf'),
+(2,3,'gwyfedfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfruolerkvhgjhrfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdbakvgbdkvjadfbvkjdfb')
+;
+
+INSERT INTO "messages" (from_user, to_user, message_body)
+VALUES(1,2,'eadthgynsjgfudvmkfigdyunfsydbt'),
+(2,1,'rsgyhtbsnfgtyhnbgfn'),
+(1,2,'rfdbjhekgstnulokrsnbkrdjgnbkdtjngbkjf')
+;
 
 INSERT INTO "user" (username, password)
 VALUES('SeerOfDreams', 'Password123'),
