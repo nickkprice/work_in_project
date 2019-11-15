@@ -31,5 +31,5 @@ if(inputArray[6] == 1){
   query += "AND tag_array[7] = TRUE ";
 }
 query += "ORDER BY time_created DESC;";
-/*this should be the message syntax*/
+/*this should be the message syntax i think*/
 var messageQuery = "SELECT * FROM \"messages\" WHERE from_user = " + user_id + " OR to_user = " + user_id + " ORDER BY combo_id, message_id DESC;"
