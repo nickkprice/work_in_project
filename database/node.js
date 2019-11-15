@@ -5,7 +5,7 @@ var findUserPosts = "SELECT * FROM \"post\" WHERE username = '" + username_varia
 /*sign in nodejs sql query*/
 var signin = "SELECT * FROM \"user\" WHERE username = '" + username_variable + "' AND password = '" + password_variable + "';";
 /*new filter query nodejs sql*/
-var newFilter = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY date_created DESC;";
+var newFilter = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY time_created DESC;";
 /*any filter other than just new nodejs sql*/
 var inputArray = [0,0,0,0,0,0,0];
 var query = "SELECT * FROM \"post\" WHERE complete = FALSE ";
@@ -30,4 +30,6 @@ if(inputArray[5] == 1){
 if(inputArray[6] == 1){
   query += "AND tag_array[7] = TRUE ";
 }
-query += "ORDER BY date_created DESC;";
+query += "ORDER BY time_created DESC;";
+/*this should be the message syntax*/
+var messageQuery = "SELECT * FROM \"messages\" WHERE from_user = " + user_id + " OR to_user = " + user_id + " ORDER BY combo_id, message_id DESC;"
