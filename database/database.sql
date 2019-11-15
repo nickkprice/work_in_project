@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS "post" (
     post_id      SERIAL PRIMARY KEY, /*unique id for each post*/
     post_title   VARCHAR(200), /*title of the post*/
     post_body    VARCHAR(2500), /*the body of the post*/
-    time_created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, /*the current date that the post is made*/
+    date_created DATE NOT NULL DEFAULT CURRENT_DATE, /*the current date that the post is made*/
+    time_created TIME NOT NULL DEFAULT CURRENT_TIMESTAMP, /*the current time that the post is made*/
     tag_array    BOOLEAN[7] NOT NULL, /*the array that stores the tags to filter by*/
     poster_id    INT REFERENCES "user"(user_id), /*this references back to the account that created it*/
     complete     BOOLEAN NOT NULL /*if the deal is complete*/
@@ -24,25 +25,27 @@ CREATE TABLE IF NOT EXISTS "messages" (
   from_user INT REFERENCES "user"(user_id),
   to_user INT REFERENCES "user"(user_id),
   message_body VARCHAR(2500),
-  time_created TIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  time_created TIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  date_created DATE NOT NULL DEFAULT CURRENT_DATE,
+  combo_id VARCHAR(7)
 );
 
-INSERT INTO "messages" (from_user, to_user, message_body)
-VALUES(1,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfx'),
-(2,1,'ghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf'),
-(1,2,'gwyferuolerkvhgjhrfdbakvgbdkvjadfbvkjdfb')
+INSERT INTO "messages" (from_user, to_user, message_body, combo_id)
+VALUES(1,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfx','1_2'),
+(2,1,'ghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf','1_2'),
+(1,2,'gwyferuolerkvhgjhrfdbakvgbdkvjadfbvkjdfb','1_2')
 ;
 
-INSERT INTO "messages" (from_user, to_user, message_body)
-VALUES(2,3,'asdfgsbhdntjggmfzbdvGx'),
-(3,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf'),
-(2,3,'gwyfedfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfruolerkvhgjhrfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdbakvgbdkvjadfbvkjdfb')
+INSERT INTO "messages" (from_user, to_user, message_body, combo_id)
+VALUES(2,3,'asdfgsbhdntjggmfzbdvGx','2_3'),
+(3,2,'dfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfghjasgfdgudskvgcbkdsfuvgbdkufvgkudfvbdjf','2_3'),
+(2,3,'gwyfedfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfruolerkvhgjhrfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdfdxghgjkjugfytudyrgfxhcgjhkjfjydthfrxvjghfgfdbakvgbdkvjadfbvkjdfb','2_3')
 ;
 
-INSERT INTO "messages" (from_user, to_user, message_body)
-VALUES(1,2,'eadthgynsjgfudvmkfigdyunfsydbt'),
-(2,1,'rsgyhtbsnfgtyhnbgfn'),
-(1,2,'rfdbjhekgstnulokrsnbkrdjgnbkdtjngbkjf')
+INSERT INTO "messages" (from_user, to_user, message_body, combo_id)
+VALUES(1,2,'eadthgynsjgfudvmkfigdyunfsydbt','1_2'),
+(2,1,'rsgyhtbsnfgtyhnbgfn','1_2'),
+(1,2,'rfdbjhekgstnulokrsnbkrdjgnbkdtjngbkjf','1_2')
 ;
 
 INSERT INTO "user" (username, password)
