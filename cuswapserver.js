@@ -291,6 +291,27 @@ app.post('/register/submitRegister', function(req, res) {
   }
 });
 
+app.get('/profile', function(req,res){
+  var logIn = true; //if false, user is not logged in
+  if(req.cookies) //user has cookies
+  {
+    if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
+    {
+      logIn = true; //they are logged in
+    }
+  }
+
+  var query1;
+  if(logIn==true){
+    res.render(__dirname+'/templates/userProfile.ejs',{
+      pageTitle: "Profile",
+      loggedIn: logIn
+    }
+  );
+  }else{
+    res.redirect('/login')
+  }
+});
 
 app.use(function (req, res, next) {
   res.status(404).send("Page not found")
