@@ -293,6 +293,9 @@ app.post('/register/submitRegister', function(req, res) {
 
 app.get('/profile', function(req,res){
   var logIn = true; //if false, user is not logged in
+  var post;
+  var userId=3;
+
   if(req.cookies) //user has cookies
   {
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
@@ -301,8 +304,27 @@ app.get('/profile', function(req,res){
     }
   }
 
-  var query1;
+  var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+";";
   if(logIn==true){
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(query1),
+        ]);
+
+    })
+    .then(data => {
+      if(data[0]){
+        for(var i=0;i<data[0].length;i++){
+          console.log(data[0][i].post_title+": "+data[0][i].post_body);
+        }
+      }
+    })
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+          //  res.redirect('/homepage');
+    });
     res.render(__dirname+'/templates/userProfile.ejs',{
       pageTitle: "Profile",
       loggedIn: logIn
