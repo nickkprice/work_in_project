@@ -292,9 +292,9 @@ app.post('/register/submitRegister', function(req, res) {
 });
 
 app.get('/userProfile', function(req,res){
-  var logIn = true; //if false, user is not logged in
+  var logIn = false; //if false, user is not logged in
   var post;
-  var userId=1;
+  var userId;
   if(req.cookies) //user has cookies
   {
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
@@ -305,23 +305,27 @@ app.get('/userProfile', function(req,res){
   }
 
   var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+";";
-  if(logIn==true){
+  var query2 = "SELECT username FROM \"user\" WHERE user_id="+userId+";";
+  var query3 = "SELECT * FROM \"messages\" WHERE (from_user="+userId+") OR (to_user="+userId+");";
+  if(logIn){
     db.task('get-everything', task => {
         return task.batch([
             task.any(query1),
+            task.any(query2),
+            task.any(query3),
         ]);
 
     })
     .then(data => {
       if(data[0]){
         post=data[0];
-        // for(var i = 0;i<post.length;i++){
-        //   console.log(post);
-        // }
+        console.log(data[2]);
         res.render(__dirname+'/templates/userProfile.ejs',{
           pageTitle: "Profile",
           loggedIn: logIn,
-          posts: post
+          posts: post,
+          name: data[1][0].username
+          messages:data[2];
         }
       );
       }
