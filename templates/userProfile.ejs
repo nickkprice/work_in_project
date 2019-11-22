@@ -18,13 +18,15 @@
         <h1 class="mt-5">@CU Username Post History</h1>
 
         <div class="card border-primary">
+
+          <% for(var i=0; i < posts.length;i++){ %>
           <div class="card-body text-dark border-top">
-            <h5 class="card-title">Trading Cookies for A+ in Software</h5>
+            <h5 class="card-title"> <%=posts[i].post_title %> </h5>
             <form>
               <div class="row">
 
                 <div class="col-6">
-                  <button type="button" name="linkToPost" class="btn btn-info btn-sm">Post</button>
+                  <button type="button" name="post1" class="btn btn-info btn-sm">Post</button>
                 </div>
                 <div class="col-6">
                   <p class="small"> <strong>Post Created: <em>10/30/19</em></strong> </p>
@@ -33,35 +35,7 @@
             </form>
           </div>
 
-          <div class="card-body text-dark border-top">
-            <h5 class="card-title">Trading Cookies for A+ in Software</h5>
-            <form>
-              <div class="row">
-
-                <div class="col-6">
-                  <button type="button" name="linkToPost" class="btn btn-info btn-sm">Post</button>
-                </div>
-                <div class="col-6">
-                  <p class="small"> <strong>Post Created: <em>10/30/19</em></strong> </p>
-                </div>
-              </div>
-            </form>
-
-          </div>
-          <div class="card-body text-dark border-top">
-            <h5 class="card-title">Trading Cookies for A+ in Software</h5>
-            <form>
-              <div class="row">
-
-                <div class="col-6">
-                  <button type="button" name="linkToPost" class="btn btn-info btn-sm">Post</button>
-                </div>
-                <div class="col-6">
-                  <p class="small"> <strong>Post Created: <em>10/30/19</em></strong> </p>
-                </div>
-              </div>
-            </form>
-          </div>
+          <% } %>
         </div>
 
       </div>
