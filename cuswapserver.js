@@ -291,10 +291,26 @@ app.post('/register/submitRegister', function(req, res) {
   }
 });
 
+function isThere(p1,index){ //Function checks whether a new user exists yet in the array
+  for(var i=0;i<p1.length;i++){
+    if(index==p1[i])
+      return true;
+  }
+  return false;
+}
+function identifyUnique(info){ //Finds all the unique messages based off of user_id
+  var hasSeen=[];
+  for(var i=0;i<info.length;i++){
+    if(!isThere(hasSeen,info[i].from_user)){
+      hasSeen.push(info[i].from_user);
+    }
+  }
+  return hasSeen;
+}
 app.get('/userProfile', function(req,res){
   var logIn = false; //if false, user is not logged in
-  var post;
-  var userId;
+  var userId; //Keeps track of current user's ID
+  var uniqueMessages; //Counts the total of unique users in messages
   if(req.cookies) //user has cookies
   {
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
@@ -305,27 +321,31 @@ app.get('/userProfile', function(req,res){
   }
 
   var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+";";
-  var query2 = "SELECT username FROM \"user\" WHERE user_id="+userId+";";
-  var query3 = "SELECT * FROM \"messages\" WHERE (from_user="+userId+") OR (to_user="+userId+");";
+  var query2 = "SELECT * FROM \"user\" WHERE user_id="+userId+";";
+  var query3 ="SELECT * FROM \"messages\" WHERE from_user = " + userId + " OR to_user = " + userId + " ORDER BY combo_id, message_id DESC;";
+  var query4 = "SELECT * FROM \"user\";";
   if(logIn){
     db.task('get-everything', task => {
         return task.batch([
             task.any(query1),
             task.any(query2),
-            task.any(query3),
+            task.any(query3), //Grabs the messages in descending ORDER
+            task.any(query4), //Grabs all the users so we can display the name of each person
         ]);
 
     })
     .then(data => {
-      if(data[0]){
-        post=data[0];
-        console.log(data[2]);
+      if(data[0]){;
+        uniqueMessages = identifyUnique(data[2]);
+        console.log(data[1][0]);
         res.render(__dirname+'/templates/userProfile.ejs',{
           pageTitle: "Profile",
           loggedIn: logIn,
-          posts: post,
-          name: data[1][0].username
-          messages:data[2];
+          posts: data[0],
+          current: data[1][0],
+          messages:data[2],
+          allUsers: uniqueMessages,
+          userInfo: data[3],
         }
       );
       }

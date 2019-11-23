@@ -48,6 +48,12 @@ VALUES(1,2,'eadthgynsjgfudvmkfigdyunfsydbt','1_2'),
 (1,2,'rfdbjhekgstnulokrsnbkrdjgnbkdtjngbkjf','1_2')
 ;
 
+INSERT INTO "messages" (from_user, to_user, message_body, combo_id)
+VALUES(3,1,'test','1_3'),
+(1,3,'test1','1_3'),
+(3,1,'test2','1_3')
+;
+
 INSERT INTO "user" (username, password)
 VALUES('SeerOfDreams', 'Password123'),
 ('b0b123', 'lookapassword'),

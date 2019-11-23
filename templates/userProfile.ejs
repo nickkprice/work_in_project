@@ -11,11 +11,11 @@
       <div class="col-4">
         <div class="card">
           <div class="card-body">
-            <h3 class="card-title">@<%=name %></h3>
+            <h3 class="card-title">@<%=current.username %></h3>
           </div>
         </div>
 
-        <h1 class="mt-5">@<%= name %> Post History</h1>
+        <h1 class="mt-5">@<%= current.username %> Post History</h1>
 
         <div class="card border-primary">
 
@@ -39,32 +39,38 @@
         </div>
 
       </div>
-
       <div class="col-8">
 
             <table class="table table-bordered bg-white">
-                <tr>
-                  <th colspan="2" class="text-center"> MESSAGES</th>
-                </tr>
+              <th colspan="2" class="text-center"> MESSAGES</th>
                 <tr>
                   <th>Username</th>
-                  <th colspan="1">Message</th>
+                  <th>Message</th>
                 </tr>
-                
-                <tr>
-                  <td>Lesh0238</td>
-                  <td>I would like to talk to you about cookies </td>
-                </tr>
-                <tr>
-                  <td>Lesh0238</td>
-                  <td>I would like to talk to you about cookies </td>
-                </tr>
-                <tr>
-                  <td>Lesh0238</td>
-                  <td>I would like to talk to you about cookies </td>
-                </tr>
-
             </table>
+            <% for(var i = 0; i < allUsers.length; i++){ %>
+            <table class="table table-bordered bg-white">
+              <% for(var message in messages) { %>
+                <% if (messages[message].from_user == allUsers[i] && messages[message].from_user != current.user_id) { %>
+              <tr>
+                <td><%= userInfo[messages[message].from_user-1].username%>:</td>
+                <td><%=messages[message].message_body%> </td>
+              </tr>
+              <% }else if(messages[message].from_user==current.user_id && messages[message].to_user == allUsers[i]){%>
+                <tr>
+
+                  <td>YOU:</td>
+                  <td><%=messages[message].message_body%> </td>
+                </tr>
+                <%}%>
+              <% } %>
+              <% if( allUsers[i] != current.user_id ) { %>
+              <textarea name="name" rows="8" cols="80">Text</textarea>
+              <button type="button" name="button">Reply</button>
+              <% } %>
+            </table>
+
+            <%}%>
         </div>
 
       </div>
