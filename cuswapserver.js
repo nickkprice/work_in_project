@@ -362,6 +362,52 @@ app.get('/userProfile', function(req,res){
   }
 });
 
+function orderComboId(from,to){ //Orders combo ID based off of smallest value
+  if(to > from){
+    return from+"_"+to;
+  }
+  return to+"_"+from;
+}
+function isEmpty(text){ //Checks if the textbox is empty; If empty return true: Not empty return false;
+  console.log(text);
+  if(text.length != 0)
+    return false;
+  return true;
+}
+app.post('/userProfile/submitReply', function(req, res) {
+  if(req.session.user && req.cookies.user_sid) //make sure user is not logged in already
+  {
+    var textInfo = req.body.replyText;
+    var from = req.session.user;
+    var to = req.body.toUserId;
+    var comboValue = orderComboId(from,to);
+    var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+textInfo+"', '"+comboValue+"');";
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(query1),
+        ]);
+    })
+    .then(data => {
+      if(!isEmpty(textInfo)){
+
+      }else{
+
+      }
+        res.redirect('/userProfile'); //go back to create post after the post is added to the database
+
+    })
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+
+    });
+  }
+  else //user is logged in (already has an account)
+  {
+    res.redirect('/homepage'); //redirect to homepage
+  }
+});
+
 app.use(function (req, res, next) {
   res.status(404).send("Page not found")
 });

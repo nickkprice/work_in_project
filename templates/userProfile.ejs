@@ -42,35 +42,46 @@
       <div class="col-8">
 
             <table class="table table-bordered bg-white">
-              <th colspan="2" class="text-center"> MESSAGES</th>
+              <th colspan="3" class="text-center"> MESSAGES</th>
                 <tr>
-                  <th>Username</th>
-                  <th>Message</th>
+                  <th width="20%">Date</th>
+                  <th width="20%">Username</th>
+                  <th width="60%">Message</th>
                 </tr>
             </table>
-            <% for(var i = 0; i < allUsers.length; i++){ %>
-            <table class="table table-bordered bg-white">
-              <% for(var message in messages) { %>
-                <% if (messages[message].from_user == allUsers[i] && messages[message].from_user != current.user_id) { %>
-              <tr>
-                <td><%= userInfo[messages[message].from_user-1].username%>:</td>
-                <td><%=messages[message].message_body%> </td>
-              </tr>
-              <% }else if(messages[message].from_user==current.user_id && messages[message].to_user == allUsers[i]){%>
+              <div class = "h-90" style="overflow-y: auto">
+              <% for(var i = 0; i < allUsers.length; i++){ %>
+
+              <table class="table table-bordered bg-white">
+                <% for(var message in messages) { %>
+                  <% if (messages[message].from_user == allUsers[i] && messages[message].from_user != current.user_id) { %>
                 <tr>
+                  <td width="20%"><%=messages[message].date_created.toString().substring(0,14) %></td>
+                  <td width="20%"><%= userInfo[messages[message].from_user-1].username%>:</td>
+                  <td width="60%"><%=messages[message].message_body%> </td>
 
-                  <td>YOU:</td>
-                  <td><%=messages[message].message_body%> </td>
                 </tr>
-                <%}%>
-              <% } %>
-              <% if( allUsers[i] != current.user_id ) { %>
-              <textarea name="name" rows="8" cols="80">Text</textarea>
-              <button type="button" name="button">Reply</button>
-              <% } %>
-            </table>
+                <% }else if(messages[message].from_user==current.user_id && messages[message].to_user == allUsers[i]){%>
+                  <tr>
+                    <td  ><%=messages[message].date_created.toString().substring(0,15) %></td>
+                    <td >YOU:</td>
+                    <td><%=messages[message].message_body%> </td>
+                  </tr>
+                  <%}%>
+                <% } %>
+                <% if( allUsers[i] != current.user_id ) { %>
+                  <form action="/userProfile/submitReply" method="post">
+                    <textarea name="replyText" rows="2" cols="80" placeholder="Reply Here..."></textarea>
+                    <input type="text" name="toUserId" hidden="hidden" value= "<%= allUsers[i] %>">
+                    <button type="submit">Reply</button>
+                  </form>
 
-            <%}%>
+                <% } %>
+              </table>
+
+              <%}%>
+            </div>
+
         </div>
 
       </div>
