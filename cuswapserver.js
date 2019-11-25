@@ -156,6 +156,35 @@ app.post('/login/submitLogin', function(req, res) {
   });
 });
 
+app.get('/post_page',function(req,res){
+  var postid;
+ if(req.session.user && req.cookies.user_sid) //check if user is logged in
+  {
+    postid = var.query.id //get postid
+        //Use get request in the server file and the post 
+    //you are navigating to will be an agrument in the URL
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(),
+        ]);
+    })
+    .then(data => {
+        res.redirect('/localhost:8080/viewPost/?id='+postid+'');
+        }//loads the particular post 
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+            res.redirect('/homepage');
+    });
+  }
+  else //user was not logged in
+  {
+    res.redirect('/login'); //redirect to login page since not logged in
+  }
+  });
+
+
+
 // log out user
 app.get('/logout', function(req, res) {
   if(req.cookies)
