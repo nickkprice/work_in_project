@@ -169,7 +169,8 @@ app.get('/post_page',function(req,res){
         ]);
     })
     .then(data => {
-        res.redirect('/localhost:8080/viewPost/?id='+postid+'');
+        res.render('/localhost:8080/viewPost/?id='+postid+'');
+        
         }//loads the particular post 
     .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
         // display error message in case an error
