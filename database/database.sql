@@ -5,9 +5,9 @@ CREATE TABLE IF NOT EXISTS "user" (
 );
 
     /*users_msgd   INT[] REFERENCES "user"(user_id), /*the table of users messaged*/
-    user_msgs    varchar(2000)[][] /*the 2d array of messages that have been sent*/temporarily disabled to wait to figure out how to do this*/
+    -- user_msgs    varchar(2000)[][] /*the 2d array of messages that have been sent*/temporarily disabled to wait to figure out how to do this*/
 
-ALTER TABLE "user" ADD posts INT[] REFERENCES "post"(post_id); /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
+-- ALTER TABLE "user" ADD posts INT[] REFERENCES "post"(post_id); /*ids of the posts to be referenced (i think thats how youd do an array in this context)*/
 
 CREATE TABLE IF NOT EXISTS "post" (
     post_id      SERIAL PRIMARY KEY, /*unique id for each post*/
@@ -48,12 +48,6 @@ VALUES(1,2,'eadthgynsjgfudvmkfigdyunfsydbt','1_2'),
 (1,2,'rfdbjhekgstnulokrsnbkrdjgnbkdtjngbkjf','1_2')
 ;
 
-INSERT INTO "messages" (from_user, to_user, message_body, combo_id)
-VALUES(3,1,'test','1_3'),
-(1,3,'test1','1_3'),
-(3,1,'test2','1_3')
-;
-
 INSERT INTO "user" (username, password)
 VALUES('SeerOfDreams', 'Password123'),
 ('b0b123', 'lookapassword'),
@@ -70,12 +64,3 @@ VALUES('car', 'this is car for sale', ARRAY [FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
 ('old furniture', 'dxfcgvhbjkn', ARRAY [FALSE,TRUE,FALSE,FALSE,FALSE,FALSE,FALSE], 4, FALSE),
 ('free edible clothes', 'is food', ARRAY [TRUE,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE], 3, FALSE)
 ;
-
-
-SELECT * FROM "user" WHERE username = 'SeerOfDreams' AND cookie = 12345; /*later replace SeerOfDreams with a username variable and cookie with a variable too*/
-
-SELECT * FROM "post" WHERE username = 'SeerOfDreams';
-
-CREATE VIEW new_filter AS SELECT * FROM post WHERE complete = FALSE ORDER BY date_created DESC;
-
-CREATE VIEW food_filter AS SELECT * FROM post WHERE complete = FALSE AND tag_array[1] = TRUE ORDER BY date_created DESC; /*maybe it's ASC i have to test*/
