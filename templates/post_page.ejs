@@ -8,16 +8,18 @@
         <h1>Post<h1>
           <div id = post_title class = "card">
             <p style="font-size:20px">@<%=current.post_title %></p>
-            <p style="font-size:20px">@<%=current.post_date %></p>
+            <p style="font-size:20px">@<%=current.date_created %></p>
           <button style ="font-size: 20px" type = "button">Report</button>
         </div>
           <div style="font-size:20px" class = card>
-          <p>@<%=current.description %>
+          <p>@<%=current.post_body%>
           </p>
         </div>
-        <div style = "font-size: 15px" class = card id = tags>
-          <p1>@<%=current.tags %><p2>
-            <button style="font-size:15px" id = message_poster>Message Poster</button>
+          <% for(var i=0; i < current.tag_array.length; i++){ %>
+          <div style = "font-size: 15px" class = card id = tags>
+            <p class = "tag_name"><%tag_array[i]%></p>
           </div>
+          <% } %>
+            <button style="font-size:15px" id = message_poster>Message Poster</button>
       </body>
       </html>

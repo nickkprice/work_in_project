@@ -156,22 +156,32 @@ app.post('/login/submitLogin', function(req, res) {
   });
 });
 
-/*app.get('/post_page',function(req,res){
-  var query.id =  //get postid
+app.get('/post_page',function(req,res){
+  var postID = req.query.id  //get postid
   if(req.session.user && req.cookies.user_sid) //check if user is logged in
   {
     
+    var query1 = "SELECT post_title FROM \"post\" WHERE post_id = "+postID+";";
         //Use get request in the server file and the post 
     //you are navigating to will be an agrument in the URL
     db.task('get-everything', task => {
         return task.batch([
-            task.any(query.id),
+            task.any(query1), //Grabs post_title
         ]);
     })
     .then(data => {
-        res.render('/localhost:8080/viewPost/?id='+postid+'');
-        
-        }//loads the particular post 
+        res.render(__dirname+'post_page.ejs',{
+          pageTitle: "post_title",
+          loggedIn: logIn,
+          posts: data[0],
+          current: data[1][0],
+          messages:data[2],
+          allUsers: uniqueMessages,
+          userInfo: data[3],
+        }
+      );
+    })
+    //loads the particular post 
     .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
         // display error message in case an error
             console.log(error);
@@ -183,7 +193,6 @@ app.post('/login/submitLogin', function(req, res) {
     res.redirect('/login'); //redirect to login page since not logged in
   }
   });
-*/
 
 
 // log out user
