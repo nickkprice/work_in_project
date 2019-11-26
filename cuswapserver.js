@@ -156,16 +156,16 @@ app.post('/login/submitLogin', function(req, res) {
   });
 });
 
-app.get('/post_page',function(req,res){
-  var postid;
- if(req.session.user && req.cookies.user_sid) //check if user is logged in
+/*app.get('/post_page',function(req,res){
+  var query.id =  //get postid
+  if(req.session.user && req.cookies.user_sid) //check if user is logged in
   {
-    postid = var.query.id //get postid
+    
         //Use get request in the server file and the post 
     //you are navigating to will be an agrument in the URL
     db.task('get-everything', task => {
         return task.batch([
-            task.any(),
+            task.any(query.id),
         ]);
     })
     .then(data => {
@@ -183,7 +183,7 @@ app.get('/post_page',function(req,res){
     res.redirect('/login'); //redirect to login page since not logged in
   }
   });
-
+*/
 
 
 // log out user
