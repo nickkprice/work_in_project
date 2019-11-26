@@ -4,7 +4,7 @@
     <% include ./partials/head %>
   </head>
 
-  <body class="bg-light">
+  <body class="bg-light" onLoad = "register()">
         <div class="container h-100">
           <div class="row">
             <div class="col-sm-9 mx-auto">
@@ -19,16 +19,24 @@
                     </div>
                     <div class="form-group form-inline">
                       <label for="uPassword" class="px-2">Create Password </label>
-                      <input type="password" name="uPassword" class="form-control" placeholder="*********"required>
+                      <input id = "psw" type="password" name="uPassword" class="form-control" placeholder="*********"required>
                     </div>
                     <div class="form-group form-inline">
                       <label for="uConfirmPassword" class="px-2">Confirm Password </label>
-                      <input type="password" name="uConfirmPassword" class="form-control" placeholder=""required>
+                      <input id = "cpsw" type="password" name="uConfirmPassword" class="form-control" placeholder=""required>
                     </div>
+                    <div class = "card">
+                      <div id = "message" style = "display:block">
+                        <h4>Password must contain the following: </h4>
+                        <p id = "letter" class = "invalid"> A <b>lowercase</b> letter</p>
+                        <p id = "capital" class = "invalid"> A <b>capital</b> letter</p>
+                        <p id = "number" class = "invalid"> A <b>number</b></p>
+                        <p id = "length" class = "invalid"> A <b>8 characters</b></p>
+                        <p id = "match" class = "invalid">Password and Confirm Password Match</p>
                     <div class="form-group">
                       <table class="table">
                         <tr>
-                          <td scope="col"><button type="submit" class="btn btn-primary px-2">Submit</button></td>
+                          <td scope="col"><button id = "my_submit_button"type="submit" class="invalid">Submit</button></td>
                           <td scope="col"><button type="button" class="btn btn-secondary btn-sm" onclick="location.href='/login'" name="login?">Login?</button></td>
                         </tr>
                       </table>
