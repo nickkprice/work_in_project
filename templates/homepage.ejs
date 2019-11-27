@@ -26,38 +26,67 @@
             <button type="button" class="btn btn-primary dropdown-toggle"
             data-toggle="dropdown">Filter</button>
             <div class="dropdown-menu">
-              <a class="dropdown-item active" href="#">new</a> <a class=
-              "dropdown-item enabled" href="#">bogar</a>
+              <a id ="filtNew" class="dropdown-item active" href="#">new</a> 
+              <a id ="filtFood" class="dropdown-item enabled" href="#">food</a>
+              <a id ="filtFurn" class="dropdown-item enabled" href="#">furniture</a>
+              <a id ="filtCloth" class="dropdown-item enabled" href="#">clothes</a>
+              <a id ="filtTnG" class="dropdown-item enabled" href="#">Toys and Games</a>
+              <a id ="filtServices" class="dropdown-item enabled" href="#">Services</a>
+              <a id ="filtTech" class="dropdown-item enabled" href="#">Technology</a>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="container">
+      <% for (var i = 0; i < posts.length; i++) { %>
       <div class="row">
         <div class="card" style="width: 100%;">
           <a href="LINK%20TO%20OFFER%20HERE">
           <div class="card">
             <div class="card-body">
               <div class="row">
-                <div class="col-6">
-                  <h5 class="card-title">
-                    User's Name
-                  </h5>
-                  <h6 class="card-subtitle mb-2 text-muted">
-                    Exchange details
-                  </h6>
-                </div>
-                <div class="col-6" align="right">
-                  <h5 class="card-title">
-                    10/31/2019
+                <div class="col-4">
+                  <h5 class = "card-title mb-2 text-muted">
+                    <%= usernames[i].username %> <!-- Check Please Username of post creator -->
                   </h5>
                 </div>
+                <div class = "col-4">
+                  <h5 class="card-title">
+                    <%= posts[i].post_title %>
+                  </h5>
+                </div>
+                <div class="col-4" align="right">
+                  <h5 class="card-title">
+                    <%= posts[i].date_created %> <!-- date posted -->
+                  </h5>
+                </div>
+              </div>
+              <div class ="row">
+                <div class = "col-12" align="center">
+                <h6 class = "card-subtitle mb-2 text-muted">
+                  <%= posts[i].post_body %> <!-- Exchange details -->
+                </h6>
+                </div>
+              </div>
+              <div class= "row">
+                <% var tags = ["food", "furniture", "clothes", "toys and games", "services", "technology", "other"];  %>
+                <% for (var j = 0; j < tags.length; j++) { %>
+                 <div class="col-2" align="center">
+                   <div class="w3-card">
+                    <div class="w3-container">
+                      <h5><font color=<% if (posts[i].tag_array[j]) { %> "blue" <% }else { %> "black" <% } %>><%= tags[j] %></font></h5>
+                    </div>
+                   </div>
+                 </div>
+
+                  <% } %>
               </div>
             </div>
           </div></a>
         </div>
       </div>
+     <% } %>
     </div>
   </body>
 </html>
