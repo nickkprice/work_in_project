@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ./partials/head %>
+  </head>
+  <body>
+    <% include ./partials/navbar %>
+    <div class="col-xs-1" align="center">
+      <img src=
+      "https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F68614365%2F326369786553%2F1%2Foriginal.20190814-141719?w=1000&amp;auto=compress&amp;rect=0%2C52%2C624%2C312&amp;s=2882470abbafd80cce377a8e97f40472"
+      class="rounded" alt="Placeholder Logo" style="width:700px;height:100px;">
+    </div><br>
+    <div class="container">
+      <div class="row justify-content-between">
+        <div class="col-6" align="left">
+          <div class="input-group mb-4">
+            <div class="input-group-prepend">
+              <button id="button-addon7" type="submit" class=
+              "btn btn-primary"></button>
+            </div><input type="search" placeholder="Search" aria-describedby=
+            "button-addon7" class="form-control">
+          </div>
+        </div>
+        <div class="col-6" align="right">
+          <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle"
+            data-toggle="dropdown">Filter</button>
+            <div class="dropdown-menu">
+              <a id ="filtNew" class="dropdown-item active" href="#">new</a> 
+              <a id ="filtFood" class="dropdown-item enabled" href="#">food</a>
+              <a id ="filtFurn" class="dropdown-item enabled" href="#">furniture</a>
+              <a id ="filtCloth" class="dropdown-item enabled" href="#">clothes</a>
+              <a id ="filtTnG" class="dropdown-item enabled" href="#">Toys and Games</a>
+              <a id ="filtServices" class="dropdown-item enabled" href="#">Services</a>
+              <a id ="filtTech" class="dropdown-item enabled" href="#">Technology</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <% for (var i = 0; i < posts.length; i++) { %>
+      <div class="row">
+        <div class="card" style="width: 100%;">
+          <a href="LINK%20TO%20OFFER%20HERE">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-4">
+                  <h5 class = "card-title mb-2 text-muted">
+                    <%= usernames[i].username %> <!-- Check Please Username of post creator -->
+                  </h5>
+                </div>
+                <div class = "col-4">
+                  <h5 class="card-title">
+                    <%= posts[i].post_title %>
+                  </h5>
+                </div>
+                <div class="col-4" align="right">
+                  <h5 class="card-title">
+                    <%= posts[i].date_created %> <!-- date posted -->
+                  </h5>
+                </div>
+              </div>
+              <div class ="row">
+                <div class = "col-12" align="center">
+                <h6 class = "card-subtitle mb-2 text-muted">
+                  <%= posts[i].post_body %> <!-- Exchange details -->
+                </h6>
+                </div>
+              </div>
+              <div class= "row">
+                <% var tags = ["food", "furniture", "clothes", "toys and games", "services", "technology", "other"];  %>
+                <% for (var j = 0; j < tags.length; j++) { %>
+                 <div class="col-2" align="center">
+                   <div class="w3-card">
+                    <div class="w3-container">
+                      <h5><font color=<% if (posts[i].tag_array[j]) { %> "blue" <% }else { %> "black" <% } %>><%= tags[j] %></font></h5>
+                    </div>
+                   </div>
+                 </div>
+
+                  <% } %>
+              </div>
+            </div>
+          </div></a>
+        </div>
+      </div>
+     <% } %>
+    </div>
+  </body>
+</html>
