@@ -74,7 +74,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // home page
 app.get('/homepage', function(req, res) {
   var logIn = false; //if false, user is not logged in
@@ -92,10 +91,25 @@ app.get('/homepage', function(req, res) {
     console.log("no cookies");
   }
 
-  res.render(__dirname+'/templates/homepage.ejs',{ //sends the client the homepage template
-    pageTitle: "Home", //title of this page
-    loggedIn: logIn //Change this based on a session cookie check
-  });
+  var posts_query = "SELECT * FROM \"post\" ORDER BY date_created DESC;";
+  var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id ORDER BY date_created DESC;";
+
+  db.task('get-posts', task => {
+    return task.batch([
+      task.any(posts_query),
+      task.any(username_query),
+    ]);
+  })
+  .then(data => {
+    //console.log(data);
+    res.render(__dirname+'/templates/homepage.ejs',{
+      pageTitle: "Home",
+      loggedIn: logIn,
+      posts: data[0],
+      usernames: data[1],
+    }
+  );
+  })
 });
 
 //login page
