@@ -13,9 +13,12 @@
 
           <ul class="list-inline">
             <li class="list-inline-item">Posted by: <%=postOwner %> </li>
+            <%if(loggedIn){%>
             <li class="list-inline-item float-right"><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Report</button></li>
+            <%}%>
           </ul>
 
+          <%if(loggedIn){%>
           <div class="modal fade" id="reportModal" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
              <div class="modal-content">
@@ -34,6 +37,7 @@
              </div>
            </div>
           </div>
+          <%}%>
 
           <p><%=post.date_created.toLocaleDateString("en-US")%></p>
           <br>
@@ -50,6 +54,7 @@
             <%}%>
           </ul>
 
+          <%if(loggedIn){%>
           <ul class="list-inline">
             <li class="list-inline-item"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#replyModal">Reply</button></li>
           </ul>
@@ -73,6 +78,7 @@
              </div>
            </div>
           </div>
+          <%}%>
 
         </div>
       </body>

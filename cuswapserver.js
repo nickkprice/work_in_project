@@ -502,8 +502,11 @@ app.post('/userProfile/submitReply', function(req, res) {
 
 app.get('/viewPost',function(req,res){ //viewing a post
   var postID = req.query.id;  //get postid from url
+  var logIn = false;
   if(req.session.user && req.cookies.user_sid) //check if user is logged in
   {
+    logIn = true;
+  }
     var postQuery1 = "SELECT * FROM \"post\" WHERE post_id = "+postID+";"; //find the post
     var postQuery2 = "SELECT username FROM \"user\";"; //all usernames
 
@@ -525,7 +528,7 @@ app.get('/viewPost',function(req,res){ //viewing a post
         }
         res.render(__dirname+'/templates/post_page.ejs',{
           pageTitle: data[0][0].post_title, //page title will be the post title
-          loggedIn: true, //user is logged in
+          loggedIn: logIn, //user is logged in
           post: data[0][0], //post info
           postOwner: data[1][data[0][0].poster_id - 1].username, //name of the poster
           tagArray: tagArray //array of tags for this post
@@ -538,11 +541,6 @@ app.get('/viewPost',function(req,res){ //viewing a post
             console.log("VIEW POST ERROR");
             res.redirect('/homepage');
     });
-  }
-  else //user was not logged in
-  {
-    res.redirect('/login'); //redirect to login page since not logged in
-  }
 });
 
 app.post('/viewPost/submitReport', function(req, res) { //reporting a post
