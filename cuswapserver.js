@@ -170,45 +170,6 @@ app.post('/login/submitLogin', function(req, res) {
   });
 });
 
-app.get('/post_page',function(req,res){
-  var postID = req.query.id  //get postid
-  if(req.session.user && req.cookies.user_sid) //check if user is logged in
-  {
-    
-    var query1 = "SELECT post_title FROM \"post\" WHERE post_id = "+postID+";";
-        //Use get request in the server file and the post 
-    //you are navigating to will be an agrument in the URL
-    db.task('get-everything', task => {
-        return task.batch([
-            task.any(query1), //Grabs post_title
-        ]);
-    })
-    .then(data => {
-        res.render(__dirname+'post_page.ejs',{
-          pageTitle: "post_title",
-          loggedIn: logIn,
-          posts: data[0],
-          current: data[1][0],
-          messages:data[2],
-          allUsers: uniqueMessages,
-          userInfo: data[3],
-        }
-      );
-    })
-    //loads the particular post 
-    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
-        // display error message in case an error
-            console.log(error);
-            res.redirect('/homepage');
-    });
-  }
-  else //user was not logged in
-  {
-    res.redirect('/login'); //redirect to login page since not logged in
-  }
-  });
-
-
 // log out user
 app.get('/logout', function(req, res) {
   if(req.cookies)
@@ -468,7 +429,7 @@ app.get('/userProfile', function(req,res){
     .then(data => {
       if(data[0]){;
         uniqueMessages = identifyUnique(data[2]);
-        console.log(data[1][0]);
+        //console.log(data[1][0]);
         res.render(__dirname+'/templates/userProfile.ejs',{
           pageTitle: "Profile",
           loggedIn: logIn,
@@ -500,7 +461,7 @@ function orderComboId(from,to){ //Orders combo ID based off of smallest value
   return to+"_"+from;
 }
 function isEmpty(text){ //Checks if the textbox is empty; If empty return true: Not empty return false;
-  console.log(text);
+  //console.log(text);
   if(text.length != 0)
     return false;
   return true;
@@ -536,6 +497,107 @@ app.post('/userProfile/submitReply', function(req, res) {
   else //user is logged in (already has an account)
   {
     res.redirect('/homepage'); //redirect to homepage
+  }
+});
+
+app.get('/viewPost',function(req,res){ //viewing a post
+  var postID = req.query.id;  //get postid from url
+  if(req.session.user && req.cookies.user_sid) //check if user is logged in
+  {
+    var postQuery1 = "SELECT * FROM \"post\" WHERE post_id = "+postID+";"; //find the post
+    var postQuery2 = "SELECT username FROM \"user\";"; //all usernames
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(postQuery1), //Grabs post info
+            task.any(postQuery2) //Grabs list of all usernames
+        ]);
+    })
+    .then(data => { //loads the particular post
+        var tagArray = [];
+        var tagNames = ["Food","Furniture","Clothes","Toys & Games","Services","Technology","Other"];
+        for(var i in data[0][0].tag_array) //creates an array of the tags that the post has
+        {
+          if(data[0][0].tag_array[i] == true)
+          {
+            tagArray.push(tagNames[i]);
+          }
+        }
+        res.render(__dirname+'/templates/post_page.ejs',{
+          pageTitle: data[0][0].post_title, //page title will be the post title
+          loggedIn: true, //user is logged in
+          post: data[0][0], //post info
+          postOwner: data[1][data[0][0].poster_id - 1].username, //name of the poster
+          tagArray: tagArray //array of tags for this post
+        }
+      );
+    })
+    .catch(error => {
+        // display error message in case an error
+            console.log(error);
+            console.log("VIEW POST ERROR");
+            res.redirect('/homepage');
+    });
+  }
+  else //user was not logged in
+  {
+    res.redirect('/login'); //redirect to login page since not logged in
+  }
+});
+
+app.post('/viewPost/submitReport', function(req, res) { //reporting a post
+  if(req.session.user && req.cookies.user_sid) //make sure user is logged in
+  {
+    var reportText = "Report regarding post id " + req.body.postId + ": " + req.body.reportText;
+    var from = req.session.user;
+    var to = 1;
+    var comboValue = orderComboId(from,to);
+    var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+reportText+"', '"+comboValue+"');";
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(query1),
+        ]);
+    })
+    .then(data => {
+      res.redirect('/homepage');
+    })
+    .catch(error => {
+        // display error message in case an error
+          console.log(error);
+          res.redirect('/homepage');
+    });
+  }
+  else //not logged in
+  {
+    res.redirect('/homepage');
+  }
+});
+
+app.post('/viewPost/submitReply', function(req, res) { //replying to post
+  if(req.session.user && req.cookies.user_sid) //make sure user is logged in
+  {
+    var replyText = req.body.replyText;
+    var from = req.session.user;
+    var to = req.body.toUserId;
+    var comboValue = orderComboId(from,to);
+    var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+replyText+"', '"+comboValue+"');";
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(query1),
+        ]);
+    })
+    .then(data => {
+      res.redirect('/viewPost/?id=' + req.body.postId);
+    })
+    .catch(error => {
+        // display error message in case an error
+          console.log(error);
+          res.redirect('/homepage');
+    });
+  }
+  else //not logged in
+  {
+    res.redirect('/homepage');
   }
 });
 

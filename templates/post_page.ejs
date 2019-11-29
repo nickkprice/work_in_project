@@ -3,23 +3,77 @@
       <head>
         <% include ./partials/head %>
       </head>
+
       <body class="bg-light">
         <% include ./partials/navbar %>
-        <h1>Post<h1>
-          <div id = post_title class = "card">
-            <p style="font-size:20px">@<%=current.post_title %></p>
-            <p style="font-size:20px">@<%=current.date_created %></p>
-          <button style ="font-size: 20px" type = "button">Report</button>
-        </div>
-          <div style="font-size:20px" class = card>
-          <p>@<%=current.post_body%>
-          </p>
-        </div>
-          <% for(var i=0; i < current.tag_array.length; i++){ %>
-          <div style = "font-size: 15px" class = card id = tags>
-            <p class = "tag_name"><%tag_array[i]%></p>
+
+        <h1 class="text-center"><%=post.post_title %></h1>
+
+        <div class="card mx-auto pl-3 pr-3" style="width: 40rem;">
+
+          <ul class="list-inline">
+            <li class="list-inline-item">Posted by: <%=postOwner %> </li>
+            <li class="list-inline-item float-right"><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#reportModal">Report</button></li>
+          </ul>
+
+          <div class="modal fade" id="reportModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+             <div class="modal-content">
+               <form action="/viewPost/submitReport" method="post">
+                 <input type="text" name="postId" hidden="hidden" value= "<%=post.post_id %>">
+               <div class="modal-header">
+                 <h5 class="modal-title">Report post</h5>
+               </div>
+               <div class="modal-body">
+                 <textarea class="form-control" name="reportText" rows="3" placeholder="What about this post is inappropriate?" required></textarea>
+               </div>
+               <div class="modal-footer">
+                 <button type="submit" class="btn btn-primary">Submit</button>
+               </div>
+               </form>
+             </div>
+           </div>
           </div>
-          <% } %>
-            <button style="font-size:15px" id = message_poster>Message Poster</button>
+
+          <p><%=post.date_created.toLocaleDateString("en-US")%></p>
+          <br>
+          <h5>Description:</h5>
+
+          <div class="card mx-auto pl-3 pr-3" style="width: 35rem;">
+            <p><%=post.post_body%></p>
+          </div>
+
+          <ul class="list-inline">
+            <li class="list-inline-item"><h5>Tags:</h5></li>
+            <%for(var tag in tagArray){%>
+              <li class="list-inline-item"><span class="badge badge-info"><%=tagArray[tag] %></span></li>
+            <%}%>
+          </ul>
+
+          <ul class="list-inline">
+            <li class="list-inline-item"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#replyModal">Reply</button></li>
+          </ul>
+
+          <div class="modal fade" id="replyModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+             <div class="modal-content">
+               <form action="/viewPost/submitReply" method="post">
+                 <input type="text" name="toUserId" hidden="hidden" value= "<%=post.poster_id %>">
+                 <input type="text" name="postId" hidden="hidden" value= "<%=post.post_id %>">
+               <div class="modal-header">
+                 <h5 class="modal-title">Reply to post</h5>
+               </div>
+               <div class="modal-body">
+                 <textarea class="form-control" name="replyText" rows="3" placeholder="Type your reply..."required></textarea>
+               </div>
+               <div class="modal-footer">
+                 <button type="submit" class="btn btn-primary">Submit</button>
+               </div>
+               </form>
+             </div>
+           </div>
+          </div>
+
+        </div>
       </body>
-      </html>
+    </html>
