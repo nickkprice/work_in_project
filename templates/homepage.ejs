@@ -13,31 +13,20 @@
     <div class="container">
       <div class="row justify-content-between">
         <div class="col-6" align="left">
-          <div class="input-group mb-4">
+            <div class="input-group mb-4">
             <div class="input-group-prepend">
-              <button id="button-addon7" type="submit" class=
-              "btn btn-primary"></button>
-            </div><input type="search" placeholder="Search" aria-describedby=
-            "button-addon7" class="form-control">
-          </div>
-        </div>
-        <div class="col-6" align="right">
-          <div class="dropdown">
-            <button type="button" class="btn btn-primary dropdown-toggle"
-            data-toggle="dropdown">Filter</button>
-            <div class="dropdown-menu">
-              <a id ="filtNew" class="dropdown-item active" href="#">new</a> 
-              <a id ="filtFood" class="dropdown-item enabled" href="#">food</a>
-              <a id ="filtFurn" class="dropdown-item enabled" href="#">furniture</a>
-              <a id ="filtCloth" class="dropdown-item enabled" href="#">clothes</a>
-              <a id ="filtTnG" class="dropdown-item enabled" href="#">Toys and Games</a>
-              <a id ="filtServices" class="dropdown-item enabled" href="#">Services</a>
-              <a id ="filtTech" class="dropdown-item enabled" href="#">Technology</a>
+                <form action="/homepage/search" method="post">
+              <button type="submit" class="btn btn-primary"></button>
             </div>
+            <label for="searchButton" class="px-2"></label>
+            <input type="text" class="form-control" placeholder="Search" name="searchButton">
           </div>
         </div>
+      </form>
       </div>
     </div>
+    <div class="row">
+    <div class="col-10">
     <div class="container">
       <% for (var i = 0; i < posts.length; i++) { %>
       <div class="row">
@@ -88,5 +77,44 @@
       </div>
      <% } %>
     </div>
+    </div>
+    <div class="col-2">
+        <form action="/homepage/filter" method="post">
+      <label for="postTags">Add Tags:</label>
+              <div id="postTags">
+                <div class="form-check form-check-inline">
+                  <input onclick="" class="form-check-input" type="checkbox" name="tag0" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox1">Food</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag1" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox2">Furniture</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag2" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox3">Clothes</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag3" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox4">Toys & Games</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag4" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox5">Services</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag5" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox6">Technology</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" name="tag6" value="TRUE">
+                  <label class="form-check-label" for="inlineCheckbox7">Other</label>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </form>
+    </div>
+  </div>
   </body>
 </html>
