@@ -113,9 +113,131 @@ app.get('/homepage', function(req, res) {
       posts: data[0],
       usernames: data[1],
     }
-  );
+  )
   })
+  .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+  // display error message in case an error
+      console.log(error);
+      res.redirect('/homepage');
 });
+  ;
+});
+
+//user has selected a filter
+app.post('/homepage/filter', function(req, res) {
+  var logIn = false; //if false, user is not logged in
+  console.log("User: " + req.session.user); //will say undefined if user not logged in, otherwise says their user_id
+  if(req.cookies) //user has cookies
+  {
+    console.log("User has cookies");
+    if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
+    {
+      logIn = true; //they are logged in
+    }
+  }
+  else
+  {
+    console.log("no cookies");
+  }
+
+    //If a checkbox was selected req.body.tag# will be TRUE (defined in homepage.ejs)
+    var tag0 = req.body.tag0;
+    var tag1 = req.body.tag1;
+    var tag2 = req.body.tag2;
+    var tag3 = req.body.tag3;
+    var tag4 = req.body.tag4;
+    var tag5 = req.body.tag5;
+    var tag6 = req.body.tag6;
+
+    ///If checkbox was not selected we have to manually set variable to false
+    var anyTags = 7;
+    if(!tag0){tag0 = "FALSE"; anyTags--;}
+    if(!tag1){tag1 = "FALSE"; anyTags--;}
+    if(!tag2){tag2 = "FALSE"; anyTags--;}
+    if(!tag3){tag3 = "FALSE"; anyTags--;}
+    if(!tag4){tag4 = "FALSE"; anyTags--;}
+    if(!tag5){tag5 = "FALSE"; anyTags--;}
+    if(!tag6){tag6 = "FALSE"; anyTags--;}
+
+    // Filtering without tags does nothing
+    var filterQuery;
+    var username_query;
+    if (anyTags == 0) {
+      res.redirect('/homepage');
+    } else {
+      console.log(anyTags);
+      var filterQuery = "SELECT * FROM \"post\" WHERE tag_array = ARRAY ["+ tag0 +","+ tag1 +","+ tag2 +","+ tag3 +","+ tag4 +","+ tag5 +","+ tag6 +"] ORDER BY date_created DESC;";
+      var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id AND tag_array = ARRAY ["+ tag0 +","+ tag1 +","+ tag2 +","+ tag3 +","+ tag4 +","+ tag5 +","+ tag6 +"] ORDER BY date_created DESC;";
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(filterQuery),
+            task.any(username_query),
+        ]);
+    })
+    .then(data => {
+      res.render(__dirname+'/templates/homepage.ejs',{
+        pageTitle: "Home",
+        loggedIn: logIn,
+        posts: data[0],
+        usernames: data[1],
+    })
+  })
+    
+    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+        // display error message in case an error
+            console.log(error);
+            res.redirect('/homepage');
+    });
+  }
+;
+});
+
+app.post('/homepage/search', function(req, res) {
+  var logIn = false; //if false, user is not logged in
+  console.log("User: " + req.session.user); //will say undefined if user not logged in, otherwise says their user_id
+  if(req.cookies) //user has cookies
+  {
+    console.log("User has cookies");
+    if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
+    {
+      logIn = true; //they are logged in
+    }
+  }
+  else
+  {
+    console.log("no cookies");
+  }
+
+  var searchInput = req.body.searchButton;
+  console.log(searchInput);
+  var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' ORDER BY date_created DESC;";
+  var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id ORDER BY date_created DESC;";
+
+db.task('get-everything', task => {
+    return task.batch([
+        task.any(filterQuery),
+        task.any(username_query),
+    ]);
+})
+.then(data => {
+  console.log(searchInput);
+  res.render(__dirname+'/templates/homepage.ejs',{
+    pageTitle: "Home",
+    loggedIn: logIn,
+    posts: data[0],
+    usernames: data[1],
+})
+})
+
+.catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+    // display error message in case an error
+        console.log(error);
+        res.redirect('/homepage');
+});
+
+});
+
 
 //login page
 app.get('/login', function(req, res) {
