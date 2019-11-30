@@ -26,10 +26,10 @@
               <div class="row">
 
                 <div class="col-6">
-                  <button type="button" name="post1" class="btn btn-info btn-sm">Post Information</button>
+                  <button type="button" name="post1" onclick="location.href='/viewPost/?id=<%=posts[i].post_id%>'" class="btn btn-info btn-sm">View</button>
                 </div>
                 <div class="col-6">
-                  <p class="small"> <strong>Post Created: <em><%=posts[i].time_created%></em></strong> </p>
+                  <p class="small"> <strong>Post Created: <em><%=posts[i].date_created.toLocaleDateString("en-US")%></em></strong> </p>
                 </div>
               </div>
             </form>
@@ -40,45 +40,54 @@
 
       </div>
       <div class="col-8">
-
             <table class="table table-bordered bg-white">
               <th colspan="3" class="text-center"> MESSAGES</th>
+            </table>
+              <div class = "h-90" style="overflow-y: auto">
+              <% for(var i = 0; i < allUsers.length; i++){ %>
+                <% if( allUsers[i] != current.user_id ) { %>
+                  <h3>Conversation with: <%= userInfo[allUsers[i]-1].username%></h3>
+                <% } %>
+
+
+              <table class="table table-bordered bg-white">
+                <% if( allUsers[i] != current.user_id ) { %>
                 <tr>
                   <th width="20%">Date</th>
                   <th width="20%">Username</th>
                   <th width="60%">Message</th>
                 </tr>
-            </table>
-              <div class = "h-90" style="overflow-y: auto">
-              <% for(var i = 0; i < allUsers.length; i++){ %>
-
-              <table class="table table-bordered bg-white">
+                <% } %>
                 <% for(var message in messages) { %>
                   <% if (messages[message].from_user == allUsers[i] && messages[message].from_user != current.user_id) { %>
                 <tr>
-                  <td width="20%"><%=messages[message].date_created.toString().substring(0,14) %></td>
+                  <td width="20%"><%=messages[message].date_created.toLocaleDateString("en-US") %></td>
                   <td width="20%"><%= userInfo[messages[message].from_user-1].username%>:</td>
                   <td width="60%"><%=messages[message].message_body%> </td>
 
                 </tr>
                 <% }else if(messages[message].from_user==current.user_id && messages[message].to_user == allUsers[i]){%>
                   <tr>
-                    <td  ><%=messages[message].date_created.toString().substring(0,15) %></td>
+                    <td  ><%=messages[message].date_created.toLocaleDateString("en-US") %></td>
                     <td >YOU:</td>
                     <td><%=messages[message].message_body%> </td>
                   </tr>
                   <%}%>
                 <% } %>
-                <% if( allUsers[i] != current.user_id ) { %>
-                  <form action="/userProfile/submitReply" method="post">
-                    <textarea name="replyText" rows="2" cols="80" placeholder="Reply Here..."></textarea>
-                    <input type="text" name="toUserId" hidden="hidden" value= "<%= allUsers[i] %>">
-                    <button type="submit">Reply</button>
-                  </form>
-
-                <% } %>
               </table>
-
+              <% if( allUsers[i] != current.user_id ) { %>
+                <ul>
+                  <form action="/userProfile/submitReply" method="post">
+                    <input type="text" name="toUserId" hidden="hidden" value= "<%= allUsers[i] %>">
+                    <li class="list-inline-item">
+                      <textarea name="replyText" rows="2" cols="50" placeholder="Reply Here..." class="form-control" required></textarea>
+                    </li>
+                    <li class="list-inline-item">
+                      <button type="submit" class="btn btn-primary">Reply</button>
+                    </li>
+                  </form>
+                </ul>
+              <% } %>
               <%}%>
             </div>
 

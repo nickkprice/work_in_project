@@ -414,7 +414,7 @@ app.get('/userProfile', function(req,res){
 
   var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+";";
   var query2 = "SELECT * FROM \"user\" WHERE user_id="+userId+";";
-  var query3 ="SELECT * FROM \"messages\" WHERE from_user = " + userId + " OR to_user = " + userId + " ORDER BY combo_id, message_id DESC;";
+  var query3 ="SELECT * FROM \"messages\" WHERE from_user = " + userId + " OR to_user = " + userId + " ORDER BY combo_id, message_id ASC;";
   var query4 = "SELECT * FROM \"user\";";
   if(logIn){
     db.task('get-everything', task => {
