@@ -74,6 +74,11 @@ app.use((req, res, next) => {
   next();
 });
 
+//login page
+app.get('/', function(req, res) { //going to root of website
+    res.redirect('/homepage'); //redirects to homepage
+});
+
 // home page
 app.get('/homepage', function(req, res) {
   var logIn = false; //if false, user is not logged in
