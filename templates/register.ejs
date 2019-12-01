@@ -2,9 +2,37 @@
 <html>
   <head>
     <% include ./partials/head %>
+    <script>
+      function checkPassword(){
+        var passInput = document.getElementById("psw");
+        var confirmInput = document.getElementById("cpsw");
+        console.log(passInput);
+        passInput.onkeyup = function(){
+          enableButton(passInput, confirmInput);
+        }
+        confirmInput.onkeyup= function(){
+          enableButton(passInput, confirmInput);
+        }
+      }
+
+      function enableButton(passInput, confirmInput)
+      {
+        var lowerCaseLetters = /[a-z]/g;
+        var upperCaseLetters = /[A-Z]/g;
+        var numbers = /[0-9]/g;
+        if(passInput.value == confirmInput.value && passInput.value.match(lowerCaseLetters) && passInput.value.match(upperCaseLetters) && passInput.value.match(numbers) && passInput.value.length >= 8)
+        {
+          document.getElementById("submitRegister").disabled = false;
+        }
+        else
+        {
+          document.getElementById("submitRegister").disabled = true;
+        }
+      }
+    </script>
   </head>
 
-  <body class="bg-light" onLoad = "register()">
+  <body class="bg-light" onload="checkPassword()">
         <div class="container h-100">
           <div class="row">
             <div class="col-sm-9 mx-auto">
@@ -25,34 +53,29 @@
                       <label for="uConfirmPassword" class="px-2">Confirm Password </label>
                       <input id = "cpsw" type="password" name="uConfirmPassword" class="form-control" placeholder=""required>
                     </div>
-                    <div class = "card">
-                      <div id = "message" style = "display:block">
-                        <h4>Password must contain the following: </h4>
-                        <p id = "letter" class = "invalid"> A <b>lowercase</b> letter</p>
-                        <p id = "capital" class = "invalid"> A <b>capital</b> letter</p>
-                        <p id = "number" class = "invalid"> A <b>number</b></p>
-                        <p id = "length" class = "invalid"> A <b>8 characters</b></p>
-                        <p id = "match" class = "invalid">Password and Confirm Password Match</p>
+
                     <div class="form-group">
                       <table class="table">
                         <tr>
-                          <td scope="col"><button id = "my_submit_button"type="submit" class="invalid">Submit</button></td>
+                          <td scope="col"><button id ="submitRegister" type="submit" class="btn btn-primary" disabled>Submit</button></td>
                           <td scope="col"><button type="button" class="btn btn-secondary btn-sm" onclick="location.href='/login'" name="login?">Login?</button></td>
                         </tr>
                       </table>
                     </div>
+
+                    <div class = "card">
+                      <div style = "display:block">
+                        <h4>Password must contain the following: </h4>
+                        <p> A <b>lowercase</b> letter</p>
+                        <p> A <b>capital</b> letter</p>
+                        <p> A <b>number</b></p>
+                        <p>At least <b>8 characters</b></p>
+                        <p>Password and Confirm Password must match</p>
+                      </div>
+                    </div>
                   </form>
-
-
-                </div>
-
-
-              </div>
             </div>
-
-
           </div>
-
         </div>
   </body>
 </html>

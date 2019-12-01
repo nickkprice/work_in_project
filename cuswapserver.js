@@ -1,3 +1,5 @@
+//Some code adapted from CSCI 3308 NodeJS Lab
+
 /***********************
 
   Load Components!
@@ -74,7 +76,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//login page
+//visiting root of website
 app.get('/', function(req, res) { //going to root of website
     res.redirect('/homepage'); //redirects to homepage
 });
@@ -183,7 +185,7 @@ app.post('/homepage/filter', function(req, res) {
         usernames: data[1],
     })
   })
-    
+
     .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
         // display error message in case an error
             console.log(error);
@@ -399,83 +401,6 @@ app.get('/register', function(req, res) {
   }
 });
 
-function register(){
-  alert("Working Function Check")
-  var myInput = document.getElementById("psw");
-  var confirmMyInput = document.getElementById("cpsw");
-  var letter = document.getElementById("letter");
-  var number = document.getElementById("number");
-  var capital = document.getElementById("capital");
-  var length = document.getElementById("length");
-  var match = document.getElementById("match");
-  var button = document.getElementById('my_submit_button');
-
-  myInput.onkeyup = function(){
-    var lowercaseletters = /[a-z]/g;
-    var uppercaseletters = /[A-Z]/g;
-    var numbers = /[0-9]/g;
-    var minlength = 8;
-
-    if (myInput.value.match(lowercaseletters)){
-      letter.classList.remove("invalid");
-      letter.classList.add("valid");
-    }
-    else {
-      letter.classList.remove("valid");
-      letter.classList.add("invalid");
-    }
-    if (myInput.value.match(uppercaseletters)){
-      capital.classList.remove("invalid");
-      capital.classList.add("valid");
-    }
-    else {
-      capital.classList.remove("valid");
-      capital.classList.add("invalid");
-    }
-    if (myInput.value.match(numbers)){
-      number.classList.remove("invalid");
-      number.classList.add("valid");
-    }
-    else {
-      number.classList.remove("valid");
-      number.classList.add("invalid");
-    }
-    if (myInput.value.length >= minlength){
-      length.classList.remove("invalid");
-      length.classList.add("valid");
-    }
-    else {
-      length.classList.remove("valid");
-      length.classList.add("invalid");
-    }
-  }
-  confirmMyInput.onkeyup= function(){
-    if(myInput.value == confirmMyInput.value){
-      var passequalsconfpass = (true);
-    }
-    else{
-      var passequalsconfpass = (false);
-    }
-    if (passequalsconfpass){
-      match.classList.remove("invalid");
-      match.classList.add("valid");
-    }
-    else{
-      match.classList.remove("valid");
-      match.classList.add("valid");
-    }
-  }
-  requirementsMet.onkeyup = function(){
-    if (letter.classList.contains("valid") && capital.classList.contains("valid") && number.classList.contains("valid") && length.classList.contains("valid") && match.classList.contains("valid")){
-      button.classList.remove("invalid");
-      button.classList.add("valid");
-    }
-    else{
-      button.classList.remove("valid");
-      button.classList.add("invalid");
-    }
-  }
-}
 
 //user is trying to create a new account
 app.post('/register/submitRegister', function(req, res) {
