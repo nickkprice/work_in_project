@@ -20,6 +20,8 @@ app.use(bodyParser.urlencoded({ extended: true })); // Add support for URL encod
 //Create Database Connection
 const pgp = require('pg-promise')();
 
+const bcrypt = require('bcrypt'); //used for password hashing
+
 
 /**********************
 
@@ -268,9 +270,9 @@ app.get('/login', function(req, res) {
 app.post('/login/submitLogin', function(req, res) {
   var inputUsername = req.body.uName;
   var inputPassword = req.body.uPassword;
-  //HASH PASSWORD HERE
+
 	//This query will return the user id of the user with username/pass combo that was entered on login page
-  var loginquery1 = "SELECT user_id FROM \"user\" WHERE username='" + inputUsername + "' AND password='" + inputPassword + "';";
+  var loginquery1 = "SELECT user_id,password FROM \"user\" WHERE username='" + inputUsername + "';";
 
   db.task('get-everything', task => {
       return task.batch([
@@ -278,19 +280,19 @@ app.post('/login/submitLogin', function(req, res) {
       ]);
   })
   .then(data => {
-		//Result of query:
-		// console.log(data[0][0]);
-		if(data[0][0]) //if user with that user/pass combo was found by sql query
-		{
-			console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
-      req.session.user = data[0][0].user_id; //sets their user session to be their user id, proves they logged in
-      res.redirect('/homepage'); //go to homepage
-		}
-		else //failed login
-		{
-      res.redirect('/login'); //go back to login page if their credentials weren't correct
-		}
-
+    //compares stored password with input password
+    bcrypt.compare(inputPassword, data[0][0].password, function(err, match) {
+      if(match) //they match
+      {
+        console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
+        req.session.user = data[0][0].user_id; //sets their user session to be their user id, proves they logged in
+        res.redirect('/homepage'); //go to homepage
+      }
+  		else //failed login
+  		{
+        res.redirect('/login'); //go back to login page if their credentials weren't correct
+  		}
+    });
   })
   .catch(error => {
       // display error message in case an error
@@ -406,11 +408,12 @@ app.get('/register', function(req, res) {
 app.post('/register/submitRegister', function(req, res) {
   if(!(req.session.user && req.cookies.user_sid)) //make sure user is not logged in already
   {
-    //NOTE: we should check that password/confirm password matched clientside and only enable the submit button then
     //Information from the "register" form
     var newName = req.body.uName;
     var newPass = req.body.uPassword;
-    //HASH PASSWORD HERE
+    bcrypt.hash(newPass, 10, function(err, hash) {
+    newPass = hash;
+
 
     //SQL to insert the new user into the database
     var regquery1 = "INSERT INTO \"user\" (username, password) VALUES('"+ newName +"', '"+ newPass +"');";
@@ -427,6 +430,7 @@ app.post('/register/submitRegister', function(req, res) {
         // display error message in case an error
             console.log(error);
             res.redirect('/register');
+    });
     });
   }
   else //user is logged in (already has an account)

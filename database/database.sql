@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "user" (
     user_id      SERIAL PRIMARY KEY, /*unique id for each user*/
-    username     VARCHAR(50),        /*the username of the user*/
+    username     VARCHAR(50) UNIQUE,        /*the username of the user*/
     password     VARCHAR(500)       /*the encrypted password*/
 );
 
