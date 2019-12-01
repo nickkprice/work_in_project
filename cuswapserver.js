@@ -583,7 +583,8 @@ app.get('/viewPost',function(req,res){ //viewing a post
           loggedIn: logIn, //user is logged in
           post: data[0][0], //post info
           postOwner: data[1][data[0][0].poster_id - 1].username, //name of the poster
-          tagArray: tagArray //array of tags for this post
+          tagArray: tagArray, //array of tags for this post
+          thisUser: req.session.user
         }
       );
     })
