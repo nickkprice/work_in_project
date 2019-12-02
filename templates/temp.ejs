@@ -1,0 +1,39 @@
+<div class="card-body">
+  <div class="row">
+    <div class="col-4">
+      <h5 class = "card-title mb-2 text-muted">
+        <%= usernames[i].username %> <!-- Check Please Username of post creator -->
+      </h5>
+    </div>
+    <div class = "col-4">
+      <h5 class="card-title">
+        <%= posts[i].post_title %>
+      </h5>
+    </div>
+    <div class="col-4" align="right">
+      <h5 class="card-title">
+        <%= posts[i].date_created %> <!-- date posted -->
+      </h5>
+    </div>
+  </div>
+  <div class ="row">
+    <div class = "col-12" align="center">
+    <h6 class = "card-subtitle mb-2 text-muted">
+      <%= posts[i].post_body %> <!-- Exchange details -->
+    </h6>
+    </div>
+  </div>
+  <div class= "row">
+    <% var tags = ["food", "furniture", "clothes", "toys and games", "services", "technology", "other"];  %>
+    <% for (var j = 0; j < tags.length; j++) { %>
+     <div class="col-2" align="center">
+       <div class="w3-card">
+        <div class="w3-container">
+          <h5><font color=<% if (posts[i].tag_array[j]) { %> "blue" <% }else { %> "black" <% } %>><%= tags[j] %></font></h5>
+        </div>
+       </div>
+     </div>
+
+      <% } %>
+  </div>
+</div>

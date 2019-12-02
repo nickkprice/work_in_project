@@ -109,7 +109,7 @@ app.get('/homepage', function(req, res) {
       pageTitle: "Home",
       loggedIn: logIn,
       posts: data[0],
-      usernames: data[1],
+      usernames: data[1]
     }
   )
   })
