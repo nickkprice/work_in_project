@@ -86,22 +86,16 @@ app.get('/', function(req, res) { //going to root of website
 // home page
 app.get('/homepage', function(req, res) {
   var logIn = false; //if false, user is not logged in
-  console.log("User: " + req.session.user); //will say undefined if user not logged in, otherwise says their user_id
   if(req.cookies) //user has cookies
   {
-    console.log("User has cookies");
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
     {
       logIn = true; //they are logged in
     }
   }
-  else
-  {
-    console.log("no cookies");
-  }
 
-  var posts_query = "SELECT * FROM \"post\" ORDER BY date_created DESC;";
-  var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id ORDER BY date_created DESC;";
+  var posts_query = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY date_created,time_created DESC;";
+  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ORDER BY date_created,time_created DESC;";
 
   db.task('get-posts', task => {
     return task.batch([
@@ -130,18 +124,12 @@ app.get('/homepage', function(req, res) {
 //user has selected a filter
 app.post('/homepage/filter', function(req, res) {
   var logIn = false; //if false, user is not logged in
-  console.log("User: " + req.session.user); //will say undefined if user not logged in, otherwise says their user_id
   if(req.cookies) //user has cookies
   {
-    console.log("User has cookies");
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
     {
       logIn = true; //they are logged in
     }
-  }
-  else
-  {
-    console.log("no cookies");
   }
 
     //If a checkbox was selected req.body.tag# will be TRUE (defined in homepage.ejs)
@@ -153,26 +141,18 @@ app.post('/homepage/filter', function(req, res) {
     var tag5 = req.body.tag5;
     var tag6 = req.body.tag6;
 
-    ///If checkbox was not selected we have to manually set variable to false
-    var anyTags = 7;
-    if(!tag0){tag0 = "FALSE"; anyTags--;}
-    if(!tag1){tag1 = "FALSE"; anyTags--;}
-    if(!tag2){tag2 = "FALSE"; anyTags--;}
-    if(!tag3){tag3 = "FALSE"; anyTags--;}
-    if(!tag4){tag4 = "FALSE"; anyTags--;}
-    if(!tag5){tag5 = "FALSE"; anyTags--;}
-    if(!tag6){tag6 = "FALSE"; anyTags--;}
+    var filterQuery = "SELECT * FROM \"post\" WHERE complete = FALSE ";
+    var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ";
+    if(tag0){filterQuery += "AND tag_array[1] = TRUE "; username_query += "AND tag_array[1] = TRUE ";}
+    if(tag1){filterQuery += "AND tag_array[2] = TRUE "; username_query += "AND tag_array[2] = TRUE ";}
+    if(tag2){filterQuery += "AND tag_array[3] = TRUE "; username_query += "AND tag_array[3] = TRUE ";}
+    if(tag3){filterQuery += "AND tag_array[4] = TRUE "; username_query += "AND tag_array[4] = TRUE ";}
+    if(tag4){filterQuery += "AND tag_array[5] = TRUE "; username_query += "AND tag_array[5] = TRUE ";}
+    if(tag5){filterQuery += "AND tag_array[6] = TRUE "; username_query += "AND tag_array[6] = TRUE ";}
+    if(tag6){filterQuery += "AND tag_array[7] = TRUE "; username_query += "AND tag_array[7] = TRUE ";}
 
-    // Filtering without tags does nothing
-    var filterQuery;
-    var username_query;
-    if (anyTags == 0) {
-      res.redirect('/homepage');
-    } else {
-      console.log(anyTags);
-      var filterQuery = "SELECT * FROM \"post\" WHERE tag_array = ARRAY ["+ tag0 +","+ tag1 +","+ tag2 +","+ tag3 +","+ tag4 +","+ tag5 +","+ tag6 +"] ORDER BY date_created DESC;";
-      var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id AND tag_array = ARRAY ["+ tag0 +","+ tag1 +","+ tag2 +","+ tag3 +","+ tag4 +","+ tag5 +","+ tag6 +"] ORDER BY date_created DESC;";
-
+    filterQuery += "ORDER BY date_created,time_created DESC;";
+    username_query += "ORDER BY date_created,time_created DESC;";
     db.task('get-everything', task => {
         return task.batch([
             task.any(filterQuery),
@@ -187,19 +167,15 @@ app.post('/homepage/filter', function(req, res) {
         usernames: data[1],
     })
   })
-
     .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
         // display error message in case an error
             console.log(error);
             res.redirect('/homepage');
     });
-  }
-;
-});
+  });
 
 app.post('/homepage/search', function(req, res) {
   var logIn = false; //if false, user is not logged in
-  console.log("User: " + req.session.user); //will say undefined if user not logged in, otherwise says their user_id
   if(req.cookies) //user has cookies
   {
     console.log("User has cookies");
@@ -208,15 +184,10 @@ app.post('/homepage/search', function(req, res) {
       logIn = true; //they are logged in
     }
   }
-  else
-  {
-    console.log("no cookies");
-  }
 
   var searchInput = req.body.searchButton;
-  console.log(searchInput);
-  var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' ORDER BY date_created DESC;";
-  var username_query = "SELECT username FROM \"user\" , \"post\" WHERE poster_id = user_id ORDER BY date_created DESC;";
+  var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created,time_created DESC;";
+  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created,time_created DESC;";
 
 db.task('get-everything', task => {
     return task.batch([
@@ -225,7 +196,6 @@ db.task('get-everything', task => {
     ]);
 })
 .then(data => {
-  console.log(searchInput);
   res.render(__dirname+'/templates/homepage.ejs',{
     pageTitle: "Home",
     loggedIn: logIn,
@@ -281,18 +251,25 @@ app.post('/login/submitLogin', function(req, res) {
   })
   .then(data => {
     //compares stored password with input password
-    bcrypt.compare(inputPassword, data[0][0].password, function(err, match) {
-      if(match) //they match
-      {
-        console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
-        req.session.user = data[0][0].user_id; //sets their user session to be their user id, proves they logged in
-        res.redirect('/homepage'); //go to homepage
-      }
-  		else //failed login
-  		{
-        res.redirect('/login'); //go back to login page if their credentials weren't correct
-  		}
-    });
+    if(data[0][0])
+    {
+      bcrypt.compare(inputPassword, data[0][0].password, function(err, match) {
+        if(match) //they match
+        {
+          console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
+          req.session.user = data[0][0].user_id; //sets their user session to be their user id, proves they logged in
+          res.redirect('/homepage'); //go to homepage
+        }
+        else //failed login
+        {
+          res.redirect('/login'); //go back to login page if their credentials weren't correct
+        }
+      });
+    }
+    else
+    {
+      res.redirect('/login');
+    }
   })
   .catch(error => {
       // display error message in case an error
@@ -323,11 +300,17 @@ app.get('/createpost', function(req, res) {
       logIn = true; //they are logged in
     }
   }
-
-  res.render(__dirname+'/templates/createpost.ejs',{ //sends the client the create post template
-    pageTitle: "Create Post", //title of this page
-    loggedIn: logIn //Change this based on a session cookie check
-  });
+  if(!logIn)
+  {
+    res.redirect('/login');
+  }
+  else
+  {
+    res.render(__dirname+'/templates/createpost.ejs',{ //sends the client the create post template
+      pageTitle: "Create Post", //title of this page
+      loggedIn: logIn //Change this based on a session cookie check
+    });
+  }
 });
 
 //user has submitted a new post from the "create post" page
