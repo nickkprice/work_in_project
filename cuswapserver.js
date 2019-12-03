@@ -1,40 +1,34 @@
 //Some code adapted from CSCI 3308 NodeJS Lab
 
 /***********************
-
   Load Components!
-
   Express      - A Node.js Framework
   Body-Parser  - A tool to help use parse the data in a post request
   Pg-Promise   - A database tool to help use connect to our PostgreSQL database
-
 ***********************/
 
-const express = require('express'); // Add the express framework has been added
+const express = require('express'); // Add the express framework
 let app = express();
 
-const bodyParser = require('body-parser'); // Add the body-parser tool has been added
-var expressSanitized = require('express-sanitize-escape');
+const bodyParser = require('body-parser'); // Add the body-parser tool
+var expressSanitized = require('express-sanitize-escape'); //package that helps escape some characters
 app.use(bodyParser.json());              // Add support for JSON encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Add support for URL encoded bodies
-app.use(expressSanitized.middleware());
+app.use(expressSanitized.middleware()); //escapes certain characters
 
-//Create Database Connection
-const pgp = require('pg-promise')();
+
+const pgp = require('pg-promise')(); //Create Database Connection
 
 const bcrypt = require('bcrypt'); //used for password hashing
 
 
 /**********************
-
-  Database Connection information
-
+  Database Connection information:
   host: This defines the ip address of the server hosting our database.  We'll be using localhost and run our database on our local machine (i.e. can't be access via the Internet)
   port: This defines what port we can expect to communicate to our database.  We'll use 5432 to talk with PostgreSQL
   database: This is the name of our specific database.
   user: This should be left as postgres, the default user account created when PostgreSQL was installed
   password: This the password for accessing the database.  You'll need to set a password USING THE PSQL TERMINAL THIS IS NOT A PASSWORD FOR POSTGRES USER ACCOUNT IN LINUX!
-
 **********************/
 // NOTE: don't use a real password if pushing to GitHub
 
@@ -49,7 +43,7 @@ const dbConfig = {
 let db = pgp(dbConfig);
 
 app.use(express.static(__dirname + '/')); // This line is necessary for us to use relative paths and access our resources directory
-app.set('view engine', 'ejs'); //using this view engine to res.sendFile html pages
+app.set('view engine', 'ejs'); //using this view engine to render html pages dynamically
 app.engine('html', require('ejs').renderFile);
 var ejs = require('ejs');
 var fs = require('fs');
@@ -57,13 +51,13 @@ var cookieParser = require('cookie-parser');
 app.use(cookieParser());
 var session = require('express-session');
 
-app.use(session({
+app.use(session({ //sets up session cookies
     key: 'user_sid', //name of cookie, user session id
     secret: '9f4d3cg5j1j6n15kqvs8', //random string used to "sign" cookies
     resave: false,
     saveUninitialized: false,
     cookie: {
-        expires: 600000 //10 minutes
+        expires: 1500000 //25 minutes
     }
 }));
 
@@ -95,7 +89,7 @@ app.get('/homepage', function(req, res) {
       logIn = true; //they are logged in
     }
   }
-
+  //Get all non-archived posts
   var posts_query = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY date_created DESC,time_created DESC;";
   var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ORDER BY date_created DESC,time_created DESC;";
 
@@ -109,8 +103,8 @@ app.get('/homepage', function(req, res) {
     //console.log(data);
     res.render(__dirname+'/templates/homepage.ejs',{
       pageTitle: "Home",
-      loggedIn: logIn,
-      posts: data[0],
+      loggedIn: logIn, //user's logged in state
+      posts: data[0], //array of posts to display
       usernames: data[1]
     }
   )
@@ -142,9 +136,10 @@ app.post('/homepage/filter', function(req, res) {
     var tag4 = req.body.tag4;
     var tag5 = req.body.tag5;
     var tag6 = req.body.tag6;
-
+    //Start of the querys
     var filterQuery = "SELECT * FROM \"post\" WHERE complete = FALSE ";
     var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ";
+    //Add to the querys for each selected tag
     if(tag0){filterQuery += "AND tag_array[1] = TRUE "; username_query += "AND tag_array[1] = TRUE ";}
     if(tag1){filterQuery += "AND tag_array[2] = TRUE "; username_query += "AND tag_array[2] = TRUE ";}
     if(tag2){filterQuery += "AND tag_array[3] = TRUE "; username_query += "AND tag_array[3] = TRUE ";}
@@ -152,7 +147,7 @@ app.post('/homepage/filter', function(req, res) {
     if(tag4){filterQuery += "AND tag_array[5] = TRUE "; username_query += "AND tag_array[5] = TRUE ";}
     if(tag5){filterQuery += "AND tag_array[6] = TRUE "; username_query += "AND tag_array[6] = TRUE ";}
     if(tag6){filterQuery += "AND tag_array[7] = TRUE "; username_query += "AND tag_array[7] = TRUE ";}
-
+    //Finish the querys
     filterQuery += "ORDER BY date_created DESC,time_created DESC;";
     username_query += "ORDER BY date_created DESC,time_created DESC;";
     db.task('get-everything', task => {
@@ -180,14 +175,15 @@ app.post('/homepage/search', function(req, res) {
   var logIn = false; //if false, user is not logged in
   if(req.cookies) //user has cookies
   {
-    console.log("User has cookies");
+    //console.log("User has cookies");
     if(req.session.user && req.cookies.user_sid) //if user has a session cookie and they are logged in
     {
       logIn = true; //they are logged in
     }
   }
 
-  var searchInput = req.body.searchButton;
+  var searchInput = req.body.searchButton; //user input from search box
+  //Selects posts that meet the search
   var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created DESC,time_created DESC;";
   var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created DESC,time_created DESC;";
 
@@ -243,7 +239,7 @@ app.post('/login/submitLogin', function(req, res) {
   var inputUsername = req.body.uName;
   var inputPassword = req.body.uPassword;
 
-	//This query will return the user id of the user with username/pass combo that was entered on login page
+	//This query will return the user id and password of the user with inputted username
   var loginquery1 = "SELECT user_id,password FROM \"user\" WHERE username='" + inputUsername + "';";
 
   db.task('get-everything', task => {
@@ -252,13 +248,13 @@ app.post('/login/submitLogin', function(req, res) {
       ]);
   })
   .then(data => {
-    //compares stored password with input password
+  //if the user was found
     if(data[0][0])
     {
-      bcrypt.compare(inputPassword, data[0][0].password, function(err, match) {
+      bcrypt.compare(inputPassword, data[0][0].password, function(err, match) {  //compares stored password with input password
         if(match) //they match
         {
-          console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
+          //console.log("Authenticated user " + data[0][0].user_id); //user with this id is logging in successfully
           req.session.user = data[0][0].user_id; //sets their user session to be their user id, proves they logged in
           res.redirect('/homepage'); //go to homepage
         }
@@ -270,7 +266,7 @@ app.post('/login/submitLogin', function(req, res) {
     }
     else
     {
-      res.redirect('/login');
+      res.redirect('/login'); //go back to login page if their credentials weren't correct
     }
   })
   .catch(error => {
@@ -319,7 +315,7 @@ app.get('/createpost', function(req, res) {
 app.post('/createpost/submitPost', function(req, res) {
   if(req.session.user && req.cookies.user_sid) //check if user is logged in
   {
-    var thisUser = req.session.user; //users id
+    var thisUser = req.session.user; //user's id
 
     //Information from the "create post" form
     var inputTitle = req.body.postTitle;
@@ -396,7 +392,7 @@ app.post('/register/submitRegister', function(req, res) {
     //Information from the "register" form
     var newName = req.body.uName;
     var newPass = req.body.uPassword;
-    bcrypt.hash(newPass, 10, function(err, hash) {
+    bcrypt.hash(newPass, 10, function(err, hash) { //hashes the password
     newPass = hash;
 
 
@@ -409,9 +405,9 @@ app.post('/register/submitRegister', function(req, res) {
         ]);
     })
     .then(data => {
-        res.redirect('/login'); //go back to create post after the post is added to the database
+        res.redirect('/login'); //go to login page so the new user can login
     })
-    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+    .catch(error => { //might get an error if a user tries to register a duplicate username
         // display error message in case an error
             console.log(error);
             res.redirect('/register');
@@ -460,8 +456,8 @@ app.get('/userProfile', function(req,res){
   if(logIn){
     db.task('get-everything', task => {
         return task.batch([
-            task.any(query1),
-            task.any(query2),
+            task.any(query1), //Grabs this users posts
+            task.any(query2), //Grabs this users info
             task.any(query3), //Grabs the messages in descending ORDER
             task.any(query4), //Grabs all the users so we can display the name of each person
         ]);
@@ -475,22 +471,22 @@ app.get('/userProfile', function(req,res){
           pageTitle: "Profile",
           loggedIn: logIn,
           posts: data[0],
-          current: data[1][0],
-          messages:data[2],
+          current: data[1][0], //this user's info
+          messages:data[2], //messages to display
           allUsers: uniqueMessages,
-          userInfo: data[3],
+          userInfo: data[3], //all user's info
         }
       );
       }
     })
-    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+    .catch(error => {
         // display error message in case an error
             console.log(error);
-          //  res.redirect('/homepage');
+            res.redirect('/homepage');
     });
 
 
-  }else{
+  }else{ //if not logged in
     res.redirect('/login')
   }
 });
@@ -508,12 +504,13 @@ function isEmpty(text){ //Checks if the textbox is empty; If empty return true: 
   return true;
 }
 app.post('/userProfile/submitReply', function(req, res) {
-  if(req.session.user && req.cookies.user_sid) //make sure user is not logged in already
+  if(req.session.user && req.cookies.user_sid) //make sure user is logged in
   {
-    var textInfo = req.body.replyText;
-    var from = req.session.user;
-    var to = req.body.toUserId;
-    var comboValue = orderComboId(from,to);
+    var textInfo = req.body.replyText; //user's message text
+    var from = req.session.user; //message is from this user
+    var to = req.body.toUserId; //sending message to this user
+    var comboValue = orderComboId(from,to); //find combo id for these two users
+    //Insert the message into database
     var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+textInfo+"', '"+comboValue+"');";
     db.task('get-everything', task => {
         return task.batch([
@@ -521,21 +518,15 @@ app.post('/userProfile/submitReply', function(req, res) {
         ]);
     })
     .then(data => {
-      if(!isEmpty(textInfo)){
-
-      }else{
-
-      }
-        res.redirect('/userProfile'); //go back to create post after the post is added to the database
-
+        res.redirect('/userProfile'); //go back to their profile
     })
-    .catch(error => { //shouldn't (hopefully) be able to get an error for this query due to the way inputs are set
+    .catch(error => {
         // display error message in case an error
             console.log(error);
 
     });
   }
-  else //user is logged in (already has an account)
+  else //user is not logged in
   {
     res.redirect('/homepage'); //redirect to homepage
   }
@@ -558,7 +549,7 @@ app.get('/viewPost',function(req,res){ //viewing a post
         ]);
     })
     .then(data => { //loads the particular post
-        var tagArray = [];
+        var tagArray = []; //will store the names of all tags for this post
         var tagNames = ["Food","Furniture","Clothes","Toys & Games","Services","Technology","Other"];
         for(var i in data[0][0].tag_array) //creates an array of the tags that the post has
         {
@@ -569,7 +560,7 @@ app.get('/viewPost',function(req,res){ //viewing a post
         }
         res.render(__dirname+'/templates/post_page.ejs',{
           pageTitle: data[0][0].post_title, //page title will be the post title
-          loggedIn: logIn, //user is logged in
+          loggedIn: logIn, //logged in state
           post: data[0][0], //post info
           postOwner: data[1][data[0][0].poster_id - 1].username, //name of the poster
           tagArray: tagArray, //array of tags for this post
@@ -588,10 +579,11 @@ app.get('/viewPost',function(req,res){ //viewing a post
 app.post('/viewPost/submitReport', function(req, res) { //reporting a post
   if(req.session.user && req.cookies.user_sid) //make sure user is logged in
   {
-    var reportText = "Report regarding post id " + req.body.postId + ": " + req.body.reportText;
-    var from = req.session.user;
-    var to = 1;
+    var reportText = "Report regarding post id " + req.body.postId + ": " + req.body.reportText; //message sent to admin
+    var from = req.session.user; //user sending the report
+    var to = 1; //admin is user account 1
     var comboValue = orderComboId(from,to);
+    //Inserts the report/message into database
     var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+reportText+"', '"+comboValue+"');";
     db.task('get-everything', task => {
         return task.batch([
@@ -616,10 +608,11 @@ app.post('/viewPost/submitReport', function(req, res) { //reporting a post
 app.post('/viewPost/submitReply', function(req, res) { //replying to post
   if(req.session.user && req.cookies.user_sid) //make sure user is logged in
   {
-    var replyText = req.body.replyText;
-    var from = req.session.user;
-    var to = req.body.toUserId;
+    var replyText = req.body.replyText; //message text
+    var from = req.session.user; //user that is replying to the post
+    var to = req.body.toUserId; //user that we are sending the message to
     var comboValue = orderComboId(from,to);
+    //Inserts the message into database
     var query1 = "INSERT INTO \"messages\" (from_user, to_user, message_body, combo_id) VALUES('"+ from +"', '"+ to +"', '"+replyText+"', '"+comboValue+"');";
     db.task('get-everything', task => {
         return task.batch([
@@ -627,7 +620,7 @@ app.post('/viewPost/submitReply', function(req, res) { //replying to post
         ]);
     })
     .then(data => {
-      res.redirect('/viewPost/?id=' + req.body.postId);
+      res.redirect('/viewPost/?id=' + req.body.postId); //go back to the post
     })
     .catch(error => {
         // display error message in case an error
@@ -641,25 +634,26 @@ app.post('/viewPost/submitReply', function(req, res) { //replying to post
   }
 });
 
-app.post('/viewPost/archive',function(req,res){ //archive a post
+app.post('/viewPost/archive',function(req,res){ //archiving a post (as the post owner)
   var postID = req.body.postID;  //get post id
-  var posterID = req.body.posterID;  //get id of post owner
+  var posterID = req.body.posterID;  //get id of actual post owner
   var logIn = false;
   if(req.session.user && req.cookies.user_sid) //check if user is logged in
   {
     logIn = true;
   }
 
-  if(logIn && req.session.user == posterID)
+  if(logIn && req.session.user == posterID) //user is logged in and owns this post
   {
-    var archiveQuery1 = "UPDATE \"post\" SET complete = TRUE WHERE post_id = "+postID+";"; //find the post
+    //updates the post to set it as completed/archived
+    var archiveQuery1 = "UPDATE \"post\" SET complete = TRUE WHERE post_id = "+postID+";";
 
     db.task('get-everything', task => {
         return task.batch([
             task.any(archiveQuery1), //Sets post as completed (archives it)
         ]);
     })
-    .then(data => { //loads the particular post
+    .then(data => { //go back to the post
       res.redirect('/viewPost/?id=' + postID);
     })
     .catch(error => {
@@ -674,7 +668,7 @@ app.post('/viewPost/archive',function(req,res){ //archive a post
   }
 });
 
-app.use(function (req, res, next) {
+app.use(function (req, res, next) { //In case a user goes to an invalid url, display error page
   res.status(404).send("Page not found")
 });
 
