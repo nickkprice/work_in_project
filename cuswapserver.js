@@ -14,8 +14,10 @@ const express = require('express'); // Add the express framework has been added
 let app = express();
 
 const bodyParser = require('body-parser'); // Add the body-parser tool has been added
+var expressSanitized = require('express-sanitize-escape');
 app.use(bodyParser.json());              // Add support for JSON encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // Add support for URL encoded bodies
+app.use(expressSanitized.middleware());
 
 //Create Database Connection
 const pgp = require('pg-promise')();
@@ -94,8 +96,8 @@ app.get('/homepage', function(req, res) {
     }
   }
 
-  var posts_query = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY date_created,time_created DESC;";
-  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ORDER BY date_created,time_created DESC;";
+  var posts_query = "SELECT * FROM \"post\" WHERE complete = FALSE ORDER BY date_created DESC,time_created DESC;";
+  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE complete = FALSE ORDER BY date_created DESC,time_created DESC;";
 
   db.task('get-posts', task => {
     return task.batch([
@@ -151,8 +153,8 @@ app.post('/homepage/filter', function(req, res) {
     if(tag5){filterQuery += "AND tag_array[6] = TRUE "; username_query += "AND tag_array[6] = TRUE ";}
     if(tag6){filterQuery += "AND tag_array[7] = TRUE "; username_query += "AND tag_array[7] = TRUE ";}
 
-    filterQuery += "ORDER BY date_created,time_created DESC;";
-    username_query += "ORDER BY date_created,time_created DESC;";
+    filterQuery += "ORDER BY date_created DESC,time_created DESC;";
+    username_query += "ORDER BY date_created DESC,time_created DESC;";
     db.task('get-everything', task => {
         return task.batch([
             task.any(filterQuery),
@@ -186,8 +188,8 @@ app.post('/homepage/search', function(req, res) {
   }
 
   var searchInput = req.body.searchButton;
-  var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created,time_created DESC;";
-  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created,time_created DESC;";
+  var filterQuery = "SELECT * FROM \"post\" WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created DESC,time_created DESC;";
+  var username_query = "SELECT username FROM \"user\" INNER JOIN \"post\" ON poster_id = user_id WHERE post_title ILIKE '%"+ searchInput +"%' AND complete = FALSE ORDER BY date_created DESC,time_created DESC;";
 
 db.task('get-everything', task => {
     return task.batch([
@@ -451,7 +453,7 @@ app.get('/userProfile', function(req,res){
     }
   }
 
-  var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+";";
+  var query1 = "SELECT * FROM \"post\" WHERE poster_id="+userId+" ORDER BY date_created DESC,time_created DESC;";
   var query2 = "SELECT * FROM \"user\" WHERE user_id="+userId+";";
   var query3 ="SELECT * FROM \"messages\" WHERE from_user = " + userId + " OR to_user = " + userId + " ORDER BY combo_id, message_id ASC;";
   var query4 = "SELECT * FROM \"user\";";
@@ -634,6 +636,39 @@ app.post('/viewPost/submitReply', function(req, res) { //replying to post
     });
   }
   else //not logged in
+  {
+    res.redirect('/homepage');
+  }
+});
+
+app.post('/viewPost/archive',function(req,res){ //archive a post
+  var postID = req.body.postID;  //get post id
+  var posterID = req.body.posterID;  //get id of post owner
+  var logIn = false;
+  if(req.session.user && req.cookies.user_sid) //check if user is logged in
+  {
+    logIn = true;
+  }
+
+  if(logIn && req.session.user == posterID)
+  {
+    var archiveQuery1 = "UPDATE \"post\" SET complete = TRUE WHERE post_id = "+postID+";"; //find the post
+
+    db.task('get-everything', task => {
+        return task.batch([
+            task.any(archiveQuery1), //Sets post as completed (archives it)
+        ]);
+    })
+    .then(data => { //loads the particular post
+      res.redirect('/viewPost/?id=' + postID);
+    })
+    .catch(error => {
+        // display error message in case an error
+            console.log(error);
+            res.redirect('/homepage');
+    });
+  }
+  else
   {
     res.redirect('/homepage');
   }

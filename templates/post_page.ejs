@@ -6,7 +6,11 @@
 
       <body class="bg-light">
         <% include ./partials/navbar %>
-
+        <%if(post.complete){%>
+          <div class="alert alert-warning text-center mx-auto mt-3" role="alert" style="width: 50rem;">
+            <h5>This post has been archived and is no longer visible on the homepage.<br>It can still be viewed from the owner's profile page.</h5>
+          </div>
+        <%}%>
         <h1 class="text-center"><%=post.post_title %></h1>
 
         <div class="card mx-auto pl-3 pr-3" style="width: 40rem;">
@@ -78,6 +82,16 @@
              </div>
            </div>
           </div>
+          <%}else if(loggedIn && thisUser == post.poster_id && post.complete == false){%>
+          <ul class="list-inline">
+            <form action="/viewPost/archive" method="post">
+              <input type="text" name="postID" hidden="hidden" value= "<%=post.post_id %>">
+              <input type="text" name="posterID" hidden="hidden" value= "<%=post.poster_id %>">
+              <li class="list-inline-item">
+                <button type="submit" class="btn btn-warning">Archive Post</button>
+              </li>
+            </form>
+          </ul>
           <%}%>
 
         </div>

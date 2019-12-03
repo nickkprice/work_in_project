@@ -44,12 +44,13 @@
               <ul class="list-inline">
                 <li class="list-inline-item"><h2><%= posts[i].post_title %></h2></li>
                 </a>
-                <li class="list-inline-item float-right"><p class="text-muted">Posted By: <%= usernames[i].username %></p></li>
+                <li class="list-inline-item float-right"><p class="text-muted"><%= posts[i].date_created.toLocaleDateString("en-US") %></p></li>
+                <!-- <li class="list-inline-item float-right"><p class="text-muted">Posted By: <%= usernames[i].username %></p></li> -->
               </ul>
 
-              <ul class="list-inline">
+              <!-- <ul class="list-inline">
                 <li class="list-inline-item float-right"><p class="text-muted"><%= posts[i].date_created.toLocaleDateString("en-US") %></p></li>
-              </ul>
+              </ul> -->
 
               <% tagArray = [] %>
               <%for(var j in posts[i].tag_array) //creates an array of the tags that the post has
